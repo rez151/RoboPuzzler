@@ -50,7 +50,7 @@ def main():
     cv2.imshow("shapes", imageContours)
 
     for imageID, piceImg, mX, mY, r, rImg in pice:
-        cv2.imshow(str(imageID), piceImg)
+        #cv2.imshow(str(imageID), piceImg)
         print("ID: "+str(imageID) + " X: "+str(mX)+" Y: "+str(mY)+" R: "+str(r))
 
     cv2.waitKey(0)
