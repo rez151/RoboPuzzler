@@ -12,7 +12,7 @@ def GetImage():
 
 def GetContours(image, median):
     pice = []
-    cnts, _ = cv2.findContours(median, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _, cnts, _ = cv2.findContours(median, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
     sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
     for i, ctr in enumerate(sorted_ctrs):
@@ -50,7 +50,7 @@ def main():
     cv2.imshow("shapes", imageContours)
 
     for imageID, piceImg, mX, mY, r, rImg in pice:
-        cv2.imshow(str(imageID), piceImg)
+        #cv2.imshow(str(imageID), piceImg)
         print("ID: "+str(imageID) + " X: "+str(mX)+" Y: "+str(mY)+" R: "+str(r))
 
     cv2.waitKey(0)
