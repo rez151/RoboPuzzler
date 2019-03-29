@@ -19,7 +19,7 @@ class PiceManager():
             if M["m10"] > 0:
                 mX = int(M["m10"] / M["m00"])
                 mY = int(M["m01"] / M["m00"])
-                cv2.circle(img_input, (mX, mY), 7, (0, 0, 255), -1)
+                cv2.circle(img_input, (mX, mY), 7, (0, 255, 0), -1)
 
             #Count corner
             approx = cv2.approxPolyDP(ctr, 0.01*cv2.arcLength(ctr, True), True)
