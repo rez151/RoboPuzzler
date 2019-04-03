@@ -1,6 +1,8 @@
 import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
 import cv2
+import numpy as np
+
 
 
 class PiceManager:
@@ -10,27 +12,44 @@ class PiceManager:
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
-            x, y, w, h = cv2.boundingRect(ctr)
-            # Extract pice
-            extractPice = img_filtered[y:y + h, x:x + w]
+            # get Extracted pice
+            extractPice = PiceManager().getExtractPice(img_filtered,ctr)
             # draw Contours
             cv2.drawContours(img_input, [ctr], 0, (0, 0, 255), 1)
-            # get Midpoint
-            M = cv2.moments(ctr)
-            if M["m10"] > 0:
-                mX = int(M["m10"] / M["m00"])
-                mY = int(M["m01"] / M["m00"])
-                cv2.circle(img_input, (mX, mY), 7, (0, 255, 0), -1)
+            # draw Midpoint
+            cv2.circle(img_input, (PiceManager().getMidpoint(ctr)), 7, (0, 255, 0), -1)
             # Count corner
             approx = cv2.approxPolyDP(ctr, 0.01 * cv2.arcLength(ctr, True), True)
+            cv2.drawContours(img_input, approx, -1, (255, 0, 255), 7)
             # Classifier Image
             classifierID = Classifier.Classifier().piceClassifier(len(approx))
             font = cv2.FONT_HERSHEY_PLAIN
-            cv2.putText(img_input, str(classifierID), (mX, mY), font, 1, (0, 0, 255))
+            cv2.putText(img_input, str(classifierID), (PiceManager().getMidpoint(ctr)), font, 1, (0, 0, 255))
 
-            extractedPices.insert(i, [i, extractPice, mX, mY, str(classifierID)])
+            extractedPices.insert(i, [i, extractPice, (PiceManager().getMidpoint(ctr)), str(classifierID)])
 
         return extractedPices, img_input
+
+    def getExtractPice(self, img_filtered, ctr):
+        thresh = cv2.threshold(img_filtered, 245, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.erode(thresh, None, iterations=2)
+        thresh = cv2.dilate(thresh, None, iterations=2)
+        x, y, w, h = cv2.boundingRect(ctr)
+        extractPice = thresh[y:y + h, x:x + w]
+        return extractPice
+
+    def getMidpoint(self, ctr):
+        M = cv2.moments(ctr)
+        if M["m10"] > 0:
+            mX = int(M["m10"] / M["m00"])
+            mY = int(M["m01"] / M["m00"])
+            return  mX, mY
+
+
+    # TODO x,y form Corner
+    def getCorners(self, img):
+        pass
+
 
     def getAllPices(self):
         img_filtered, img_input = CameraManager.CameraManager().getImageFile()
@@ -44,8 +63,8 @@ if __name__ == '__main__':
     # cv2.imshow("filter", CameraManager.CameraManager().getCameraInput()[0])
     # cv2.imshow("filter", CameraManager.CameraManager().getImageFile()[0])
 
-    for imageID, piceImg, mX, mY, classifierID in extractedPices:
-        # cv2.imshow(str(imageID)+classifierID, piceImg)
-        print("ID: " + str(imageID) + " X: " + str(mX) + " Y: " + str(mY) + " C: " + classifierID)
+    for imageID, piceImg, midPoint, classifierID in extractedPices:
+        #cv2.imshow(str(imageID)+classifierID, piceImg)
+        print("ID: " + str(imageID) + " X: " + str(midPoint[0]) + " Y: " + str(midPoint[1]) + " C: " + classifierID )
     cv2.waitKey(0)
     cv2.destroyAllWindows()
