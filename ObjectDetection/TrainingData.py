@@ -1,4 +1,8 @@
 import Augmentor
+import tensorflow as tf
+
+
+
 
 class TrainingData:
     def generateTrainingData(self):
