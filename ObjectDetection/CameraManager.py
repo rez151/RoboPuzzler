@@ -4,7 +4,7 @@ import cv2
 class CameraManager:
 
     def getImageFile(self):
-        image = cv2.imread("Bilder/shapes.jpg")
+        image = cv2.imread("TrainingData/Zebra/Zebra.jpg")
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
@@ -15,8 +15,8 @@ class CameraManager:
         thresh = cv2.dilate(thresh, None, iterations=2)
         return thresh, image
 
-    def getCameraInput(self):
-        cap = cv2.VideoCapture(1)
+    def getCameraFrameInput(self):
+        cap = cv2.VideoCapture(0)
         if cap.isOpened():
             _, img_input = cap.read()
             cap.release()

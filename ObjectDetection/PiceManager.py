@@ -20,7 +20,7 @@ class PiceManager:
             approx = cv2.approxPolyDP(ctr, 0.01 * cv2.arcLength(ctr, True), True)
             cv2.drawContours(img_input, approx, -1, (255, 0, 255), 7)
             # Classifier Image
-            classifierID = Classifier.Classifier().piceClassifier(len(approx))
+            classifierID = i #Classifier.Classifier().piceClassifier(len(approx))
             font = cv2.FONT_HERSHEY_PLAIN
             cv2.putText(img_input, str(classifierID), (PiceManager().getMidpoint(ctr)), font, 1, (0, 0, 255))
 
@@ -29,11 +29,8 @@ class PiceManager:
         return extractedPices, img_input
 
     def getExtractPice(self, img_filtered, ctr):
-        thresh = cv2.threshold(img_filtered, 245, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.erode(thresh, None, iterations=2)
-        thresh = cv2.dilate(thresh, None, iterations=2)
         x, y, w, h = cv2.boundingRect(ctr)
-        extractPice = thresh[y:y + h, x:x + w]
+        extractPice = img_filtered[y:y + h, x:x + w]
         return extractPice
 
     def getMidpoint(self, ctr):
@@ -51,15 +48,15 @@ class PiceManager:
 
     def getAllPices(self):
         img_filtered, img_input = CameraManager.CameraManager().getImageFile()
-        # img_filtered, img_input = CameraManager.CameraManager().getCameraInput()
+        # img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
         return PiceManager().extractPices(img_filtered, img_input)
 
 
 if __name__ == '__main__':
     extractedPices, img_input = PiceManager().getAllPices()
     cv2.imshow("Original", img_input)
-    # cv2.imshow("filter", CameraManager.CameraManager().getCameraInput()[0])
-    # cv2.imshow("filter", CameraManager.CameraManager().getImageFile()[0])
+    # cv2.imshow("filter", CameraManager.CameraManager().getCameraFrameInput()[0])
+    cv2.imshow("filter", CameraManager.CameraManager().getImageFile()[0])
 
     for imageID, piceImg, midPoint, classifierID in extractedPices:
         #cv2.imshow(str(imageID)+classifierID, piceImg)
