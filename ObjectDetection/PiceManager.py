@@ -1,8 +1,6 @@
 import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
 import cv2
-import numpy as np
-
 
 
 class PiceManager:
