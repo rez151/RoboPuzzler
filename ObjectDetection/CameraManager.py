@@ -4,10 +4,9 @@ import cv2
 class CameraManager:
 
     def getImageFile(self):
-        image = cv2.imread("TrainingData/Zebra/Zebra.jpg")
+        image = cv2.imread("TrainingData/Elefant/Elefant.jpg")
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
-
         # threshold the image, then perform a series of erosions +
         # dilations to remove any small regions of noise
         thresh = cv2.threshold(gray, 245, 255, cv2.THRESH_BINARY)[1]

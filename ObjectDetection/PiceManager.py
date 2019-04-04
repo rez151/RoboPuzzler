@@ -1,6 +1,7 @@
 import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
 import cv2
+import numpy as np
 
 
 class PiceManager:
@@ -20,7 +21,7 @@ class PiceManager:
             approx = cv2.approxPolyDP(ctr, 0.01 * cv2.arcLength(ctr, True), True)
             cv2.drawContours(img_input, approx, -1, (255, 0, 255), 7)
             # Classifier Image
-            classifierID = i #Classifier.Classifier().piceClassifier(len(approx))
+            classifierID = Classifier.Classifier().Classifier(PiceManager().editForTensorflow(extractPice))
             font = cv2.FONT_HERSHEY_PLAIN
             cv2.putText(img_input, str(classifierID), (PiceManager().getMidpoint(ctr)), font, 1, (0, 0, 255))
 
@@ -39,6 +40,15 @@ class PiceManager:
             mX = int(M["m10"] / M["m00"])
             mY = int(M["m01"] / M["m00"])
             return  mX, mY
+
+    def editForTensorflow(self,img):
+        # Format for the Mul:0 Tensor
+        img2 = cv2.resize(img, dsize=(299, 299), interpolation=cv2.INTER_CUBIC)
+        # Numpy array
+        np_image_data = np.asarray(img2)
+        # maybe insert float convertion here - see edit remark!
+        np_final = np.expand_dims(np_image_data, axis=0)
+        return  np_final
 
 
     # TODO x,y form Corner

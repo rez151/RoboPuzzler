@@ -1,0 +1,7 @@
+elefant
+giraffe
+kamel
+krokodil
+lion
+nilpferd
+zebra
