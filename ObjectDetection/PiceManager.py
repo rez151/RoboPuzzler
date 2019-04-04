@@ -2,7 +2,7 @@ import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
 import cv2
 import numpy as np
-
+from PIL import Image
 
 class PiceManager:
     def extractPices(self, img_filtered, img_input):
@@ -42,13 +42,8 @@ class PiceManager:
             return  mX, mY
 
     def editForTensorflow(self,img):
-        # Format for the Mul:0 Tensor
-        img2 = cv2.resize(img, dsize=(299, 299), interpolation=cv2.INTER_CUBIC)
-        # Numpy array
-        np_image_data = np.asarray(img2)
-        # maybe insert float convertion here - see edit remark!
-        np_final = np.expand_dims(np_image_data, axis=0)
-        return  np_final
+        img_as_string = cv2.imencode('.jpg', img)[1].tostring()
+        return img_as_string
 
 
     # TODO x,y form Corner

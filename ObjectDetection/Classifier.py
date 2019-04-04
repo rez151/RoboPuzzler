@@ -3,8 +3,6 @@ import tensorflow as tf
 
 class Classifier:
     def Classifier(self,img):
-        image_data = tf.gfile.GFile("TrainingData/Giraffe/Giraffe.jpg", "rb").read()
-
         # Loads label file, strips off carriage return
         label_lines = [line.rstrip() for line
                        in tf.gfile.GFile("TrainingData/retrained_labels.txt")]
@@ -19,8 +17,7 @@ class Classifier:
             # Feed the image_data as input to the graph and get first prediction
             softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
-            predictions = sess.run(softmax_tensor, \
-                                   {'DecodeJpeg/contents:0': image_data})
+            predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': img})
 
             # Sort to show labels of first prediction in order of confidence
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
