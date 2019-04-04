@@ -4,8 +4,7 @@ import tensorflow as tf
 class Classifier:
     def Classifier(self,img):
         # Loads label file, strips off carriage return
-        label_lines = [line.rstrip() for line
-                       in tf.gfile.GFile("TrainingData/retrained_labels.txt")]
+        label_lines = [line.rstrip() for line in tf.gfile.GFile("TrainingData/retrained_labels.txt")]
 
         # Unpersists graph from file
         with tf.gfile.GFile("TrainingData/retrained_graph.pb", 'rb') as f:
@@ -25,5 +24,4 @@ class Classifier:
             for node_id in top_k:
                 human_string = label_lines[node_id]
                 score = predictions[0][node_id]
-                return (human_string+ " " +str(score))
-
+                return (human_string+ " " +str(score*100)+"%")
