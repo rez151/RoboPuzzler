@@ -1,22 +1,25 @@
 import Augmentor
 
 class TrainingData:
-    def generateTrainingData(self):
-        p = Augmentor.Pipeline("TrainingData/Zebra")
-        # Point to a directory containing ground truth data.
-        # Images with the same file names will be added as ground truth data
-        # and augmented in parallel to the original data.
-        # Add operations to the pipeline as normal:
-        p.rotate90(probability=0.5)
-        p.rotate270(probability=0.5)
-        p.flip_left_right(probability=0.8)
-        p.flip_top_bottom(probability=0.3)
-        p.crop_random(probability=1, percentage_area=0.5)
-        p.resize(probability=1.0, width=120, height=120)
-        p.sample(1000)
+    def generateTrainingData(self,samples):
+        filePath = {"TrainingData/Elefant",
+                    "TrainingData/Giraffe",
+                    "TrainingData/Kamel",
+                    "TrainingData/Krokodil",
+                    "TrainingData/Lion",
+                    "TrainingData/Nilpferd",
+                    "TrainingData/Zebra"}
+
+        for path in filePath:
+            p = Augmentor.Pipeline(path)
+            p.rotate(probability=0.5,max_left_rotation=10,max_right_rotation=10)
+            p.flip_random(probability=0.5)
+            p.random_distortion(probability=0.15, grid_width=20, grid_height=20, magnitude=1)
+            p.skew(probability=0.5,magnitude=0.1)
+            p.sample(samples)
         pass
 
 
 if __name__ == '__main__':
-    TrainingData().generateTrainingData()
+    TrainingData().generateTrainingData(100)
 

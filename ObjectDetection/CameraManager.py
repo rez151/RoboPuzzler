@@ -15,7 +15,7 @@ class CameraManager:
         return thresh, image
 
     def getCameraFrameInput(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(1)
         if cap.isOpened():
             _, img_input = cap.read()
             cap.release()

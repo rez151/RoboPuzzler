@@ -57,14 +57,3 @@ class PiceManager:
         return PiceManager().extractPices(img_filtered, img_input)
 
 
-if __name__ == '__main__':
-    extractedPices, img_input = PiceManager().getAllPices()
-    cv2.imshow("Original", img_input)
-    # cv2.imshow("filter", CameraManager.CameraManager().getCameraFrameInput()[0])
-    cv2.imshow("filter", CameraManager.CameraManager().getImageFile()[0])
-
-    for imageID, piceImg, midPoint, classifierID in extractedPices:
-        #cv2.imshow(str(imageID)+classifierID, piceImg)
-        print("ID: " + str(imageID) + " X: " + str(midPoint[0]) + " Y: " + str(midPoint[1]) + " C: " + classifierID )
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
