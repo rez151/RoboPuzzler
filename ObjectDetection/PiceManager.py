@@ -11,22 +11,24 @@ class PiceManager:
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
-            # get Extracted pice
-            extractPice = PiceManager().getExtractPice(img_filtered,ctr)
-            # draw Contours
-            cv2.drawContours(img_input, [ctr], 0, (0, 0, 255), 1)
-            # draw Midpoint
-            cv2.circle(img_input, (PiceManager().getMidpoint(ctr)), 7, (0, 255, 0), -1)
-            # Count corner
-            approx = cv2.approxPolyDP(ctr, 0.01 * cv2.arcLength(ctr, True), True)
-            cv2.drawContours(img_input, approx, -1, (255, 0, 255), 7)
-            # Classifier Image
-            classifierID = Classifier.Classifier().Classifier(PiceManager().editForTensorflow(extractPice))
-            font = cv2.FONT_HERSHEY_PLAIN
-            cv2.putText(img_input, str(classifierID), (PiceManager().getMidpoint(ctr)), font, 1, (0, 0, 255))
+            if(i==0):
+                pass
+            else:
+                # get Extracted pice
+                extractPice = PiceManager().getExtractPice(img_filtered,ctr)
+                # draw Contours
+                cv2.drawContours(img_input, [ctr], 0, (0, 0, 255), 2)
+                # draw Midpoint
+                cv2.circle(img_input, (PiceManager().getMidpoint(ctr)), 7, (0, 255, 0), -1)
+                # Count corner
+                # approx = cv2.approxPolyDP(ctr, 0.01 * cv2.arcLength(ctr, True), True)
+                # cv2.drawContours(img_input, approx, -1, (255, 0, 255), 7)
+                # Classifier Image
+                classifierID = Classifier.Classifier().Classifier(PiceManager().editForTensorflow(extractPice))
+                font = cv2.FONT_HERSHEY_PLAIN
+                cv2.putText(img_input, str(classifierID), (PiceManager().getMidpoint(ctr)), font, 1, (0, 0, 255))
 
-            extractedPices.insert(i, [i, extractPice, (PiceManager().getMidpoint(ctr)), str(classifierID)])
-
+                extractedPices.insert(i, [i, extractPice, (PiceManager().getMidpoint(ctr)), str(classifierID)])
         return extractedPices, img_input
 
     def getExtractPice(self, img_filtered, ctr):
