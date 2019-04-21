@@ -24,4 +24,4 @@ class Classifier:
             for node_id in top_k:
                 human_string = label_lines[node_id]
                 score = predictions[0][node_id]
-                return (human_string+ " " +str(score*100)+"%")
+                return (human_string)#+ " " +str(score*100)+"%"
