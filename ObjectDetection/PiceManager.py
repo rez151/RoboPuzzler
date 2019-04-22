@@ -24,12 +24,9 @@ class PiceManager:
                 normedmaxpoint = PiceManager().normedMaxPosition(midpoint, classifierID)
                 rotation = PiceManager().getRotation(midpoint, maxpoint, normedmaxpoint)
 
-
                 # draw line from normedpoint and local maxpoint to midpoint
                 cv2.line(img_input,midpoint,normedmaxpoint,(255,0,0),1)
                 cv2.line(img_input,midpoint,maxpoint,(0,255,0),1)
-
-
                 # correct Rotation
                 extractPice = imutils.rotate_bound(extractPice, rotation)
                 # draw Contours
@@ -38,8 +35,8 @@ class PiceManager:
                 cv2.circle(img_input, midpoint, 7, (0, 255, 0), -1)
                 # draw MaxPoint
                 cv2.circle(img_input, maxpoint, 7, (0, 255, 0), -1)
-                # draw Classification
-                cv2.putText(img_input, str(classifierID), midpoint, cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255))
+                # draw Classification text
+                cv2.putText(img_input, str(classifierID), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
                 # draw rotation Circles
                 PiceManager().drawRotationCircle(img_input, midpoint, maxpoint, classifierID)
                 # print progress status
@@ -53,12 +50,6 @@ class PiceManager:
         extractPice = img_filtered[y:y + h, x:x + w]
         return extractPice
 
-    def getExtractPiceByMidpoint(self, img_filtered, midpoint, pointWithMaxDistance):
-        x, y = midpoint
-        w, h = pointWithMaxDistance
-        extractPice = img_filtered[y:(y) + h, x:(x) + w]
-        cv2.imshow("w", extractPice)
-        return extractPice
 
     def getContour(self, img):
         _, cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
