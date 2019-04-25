@@ -65,3 +65,4 @@ class Classifire:
             return "Nilpferd"
         if (id == 6):
             return "Zebra"
+    pass
