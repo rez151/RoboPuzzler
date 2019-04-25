@@ -1,27 +1,67 @@
-import tensorflow as tf
+from keras.preprocessing.image import img_to_array
+from keras.models import load_model, Sequential
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Activation, Dropout, Flatten, Dense
+from keras import backend as K
+import numpy as np
+import cv2
 
+class Classifire:
 
-class Classifier:
     def Classifier(self,img):
-        # Loads label file, strips off carriage return
-        label_lines = [line.rstrip() for line in tf.gfile.GFile("TrainingData/retrained_labels.txt")]
+        image = cv2.resize(img, (150, 150))
+        image = image.astype("float") / 255.0
+        image = img_to_array(image)
+        image = np.expand_dims(image, axis=0)
 
-        # Unpersists graph from file
-        with tf.gfile.GFile("TrainingData/retrained_graph.pb", 'rb') as f:
-            graph_def = tf.GraphDef()
-            graph_def.ParseFromString(f.read())
-            _ = tf.import_graph_def(graph_def, name='')
 
-        with tf.Session() as sess:
-            # Feed the image_data as input to the graph and get first prediction
-            softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
-            predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': img})
+        print(image.shape)
 
-            # Sort to show labels of first prediction in order of confidence
-            top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        K.set_image_dim_ordering('tf')
 
-            for node_id in top_k:
-                human_string = label_lines[node_id]
-                score = predictions[0][node_id]
-                return (human_string)#+ " " +str(score*100)+"%"
+        model = Sequential()
+        model.add(Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(150,150,3)))
+        model.add(Conv2D(32, (3, 3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
+
+        model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
+
+        model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
+
+        model.add(Flatten())
+        model.add(Dense(512, activation='relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(7, activation='softmax'))
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer='adam',
+                      metrics=['accuracy'])
+
+        model.load_weights('model/first_train.h5')
+
+        prediction = model.predict(image)
+
+        id = prediction.argmax(1)
+        print(id)
+        if (id == 0):
+            return "Elefant"
+        if (id == 1):
+            return "Giraffe"
+        if (id == 2):
+            return "Kamel"
+        if (id == 3):
+            return "Krokodil"
+        if (id == 4):
+            return "Lion"
+        if (id == 5):
+            return "Nilpferd"
+        if (id == 6):
+            return "Zebra"

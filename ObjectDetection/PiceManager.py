@@ -9,7 +9,7 @@ import imutils
 class PiceManager:
     def extractPices(self, img_filtered, img_input):
         extractedPices = []
-        _, cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
@@ -18,9 +18,10 @@ class PiceManager:
             else:
                 # get Extracted pice
                 extractPice = PiceManager().getExtractPice(img_filtered, ctr)
+                extractPiceClassification  = PiceManager().getExtractPice(img_input, ctr)
                 midpoint = PiceManager().getMidpoint(ctr)
                 maxpoint = PiceManager().getPointMaxDistance(midpoint, ctr)
-                classifierID = Classifier.Classifier().Classifier(PiceManager().editForTensorflow(extractPice))
+                classifierID = Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = PiceManager().normedMaxPosition(midpoint, classifierID)
                 rotation = PiceManager().getRotation(midpoint, maxpoint, normedmaxpoint)
 
@@ -52,7 +53,7 @@ class PiceManager:
 
 
     def getContour(self, img):
-        _, cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
@@ -77,7 +78,7 @@ class PiceManager:
         return ox, oy
 
     def getRotation(self, midpoint, maxpoint, normedmaxpoint):
-        angle1 = math.atan2(midpoint[1] - maxpoint[1], midpoint[0] - maxpoint[0]);
+        angle1 = math.atan2(midpoint[1] - maxpoint[1], midpoint[0] - maxpoint[0])
         angle2 = math.atan2(midpoint[1] - normedmaxpoint[1], midpoint[0] - normedmaxpoint[0]);
         result = (angle2 - angle1) * 180 / math.pi;
         if (result > 180):
