@@ -3,6 +3,8 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 K.set_image_dim_ordering('tf')
 
@@ -65,9 +67,9 @@ validation_generator = test_datagen.flow_from_directory(
 
 model.fit_generator(
         train_generator,
-        steps_per_epoch=200 // batch_size,
-        epochs=5,
+        steps_per_epoch=2000 // batch_size,
+        epochs=20,
         validation_data=validation_generator,
-        validation_steps=400 // batch_size)
+        validation_steps=800 // batch_size)
 model.save_weights('model/first_train.h5')  # always save your weights after training or during training
 

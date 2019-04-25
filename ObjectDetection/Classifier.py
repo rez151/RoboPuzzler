@@ -14,10 +14,6 @@ class Classifire:
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 
-
-
-        print(image.shape)
-
         K.set_image_dim_ordering('tf')
 
         model = Sequential()
@@ -49,20 +45,19 @@ class Classifire:
 
         prediction = model.predict(image)
 
-        id = prediction.argmax(1)
-        print(id)
+        id = prediction.argmax(1)[0]
         if (id == 0):
-            return "Elefant"
+            return "Elefant",id
         if (id == 1):
-            return "Giraffe"
+            return "Giraffe",id
         if (id == 2):
-            return "Kamel"
+            return "Kamel",id
         if (id == 3):
-            return "Krokodil"
+            return "Krokodil",id
         if (id == 4):
-            return "Lion"
+            return "Lion",id
         if (id == 5):
-            return "Nilpferd"
+            return "Nilpferd",id
         if (id == 6):
-            return "Zebra"
+            return "Zebra",id
     pass

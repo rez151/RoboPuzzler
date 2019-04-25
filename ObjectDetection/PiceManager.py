@@ -21,7 +21,7 @@ class PiceManager:
                 extractPiceClassification  = PiceManager().getExtractPice(img_input, ctr)
                 midpoint = PiceManager().getMidpoint(ctr)
                 maxpoint = PiceManager().getPointMaxDistance(midpoint, ctr)
-                classifierID = Classifier.Classifire().Classifier(extractPiceClassification)
+                classifierID,id = Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = PiceManager().normedMaxPosition(midpoint, classifierID)
                 rotation = PiceManager().getRotation(midpoint, maxpoint, normedmaxpoint)
 
@@ -43,7 +43,7 @@ class PiceManager:
                 # print progress status
                 print(str(int((i * 100) / (sorted_ctrs.__len__() - 1))) + "% Done")
 
-                extractedPices.insert(i, [i, extractPice, midpoint, str(classifierID), rotation])
+                extractedPices.insert(i, [i, extractPice, midpoint, str(id), rotation])
         return extractedPices, img_input
 
     def getExtractPice(self, img_filtered, ctr):
