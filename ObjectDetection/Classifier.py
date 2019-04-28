@@ -44,8 +44,8 @@ class Classifire:
         model.load_weights('model/first_train.h5')
 
         prediction = model.predict(image)
-
         id = prediction.argmax(1)[0]
+
         if (id == 0):
             return "Elefant",id
         if (id == 1):

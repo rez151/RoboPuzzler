@@ -37,7 +37,7 @@ class PiceManager:
                 # draw MaxPoint
                 cv2.circle(img_input, maxpoint, 7, (0, 255, 0), -1)
                 # draw Classification text
-                cv2.putText(img_input, str(classifierID), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
+                cv2.putText(img_input, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
                 # draw rotation Circles
                 PiceManager().drawRotationCircle(img_input, midpoint, maxpoint, classifierID)
                 # print progress status
