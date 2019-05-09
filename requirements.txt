@@ -7,4 +7,3 @@ sklearn
 matplotlib
 Pillow
 Augmentor
-joblib

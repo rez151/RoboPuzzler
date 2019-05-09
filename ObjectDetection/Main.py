@@ -3,8 +3,8 @@ import ObjectDetection.PiceManager as pm
 
 
 class Main:
-    def startDetection(self):
-        extractedPices, img_input = pm.PiceManager().getAllPices()
+    def startDetection(self,path):
+        extractedPices, img_input = pm.PiceManager().getAllPices(path)
         cv2.imshow("Input", img_input)
         file =open("output/cordinaten.txt","w")
         for imageID, piceImg, midPoint, id, rotation in extractedPices:
@@ -17,4 +17,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection()
+    Main().startDetection("TestImages/testwithallpicesrotated.jpg")

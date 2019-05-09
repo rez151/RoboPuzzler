@@ -17,13 +17,13 @@ class PiceManager:
                 pass
             else:
                 # get Extracted pice
-                extractPice = PiceManager().getExtractPice(img_filtered, ctr)
-                extractPiceClassification  = PiceManager().getExtractPice(img_input, ctr)
-                midpoint = PiceManager().getMidpoint(ctr)
-                maxpoint = PiceManager().getPointMaxDistance(midpoint, ctr)
+                extractPice = self.getExtractPice(img_filtered, ctr)
+                extractPiceClassification  = self.getExtractPice(img_input, ctr)
+                midpoint = self.getMidpoint(ctr)
+                maxpoint = self.getPointMaxDistance(midpoint, ctr)
                 classifierID,id = Classifier.Classifire().Classifier(extractPiceClassification)
-                normedmaxpoint = PiceManager().normedMaxPosition(midpoint, classifierID)
-                rotation = PiceManager().getRotation(midpoint, maxpoint, normedmaxpoint)
+                normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
+                rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
 
                 # draw line from normedpoint and local maxpoint to midpoint
                 cv2.line(img_input,midpoint,normedmaxpoint,(255,0,0),1)
@@ -63,15 +63,15 @@ class PiceManager:
                 return ctr
 
     def getOrientationPoint(self, id):
-        img_filtered, img_input = CameraManager.CameraManager().getImageFilebyPath(id)
-        normedPiceContour = PiceManager().getContour(img_filtered)
-        normedPice = PiceManager().getExtractPice(img_filtered, normedPiceContour)
-        mx, my = PiceManager().getMidpoint(normedPiceContour)
-        x, y = PiceManager().getPointMaxDistance((mx, my), normedPiceContour)
+        img_filtered, img_input = CameraManager.CameraManager().getImageFilebyID(id)
+        normedPiceContour = self.getContour(img_filtered)
+        normedPice = self.getExtractPice(img_filtered, normedPiceContour)
+        mx, my = self.getMidpoint(normedPiceContour)
+        x, y = self.getPointMaxDistance((mx, my), normedPiceContour)
         return x, y, mx, my
 
     def normedMaxPosition(self, midpoint, classifireID):
-        ox, oy, omx, omy = PiceManager().getOrientationPoint(classifireID)
+        ox, oy, omx, omy = self.getOrientationPoint(classifireID)
         mx, my = midpoint
         ox = (mx - omx) + ox
         oy = (my - omy) + oy
@@ -101,8 +101,8 @@ class PiceManager:
         maxpoint = (0, 0)
         for p1 in p:
             for p2 in p1:
-                if (maxdist < PiceManager().getPointDistance(midpoint, p2)):
-                    maxdist = PiceManager().getPointDistance(midpoint, p2)
+                if (maxdist < self.getPointDistance(midpoint, p2)):
+                    maxdist = self.getPointDistance(midpoint, p2)
                     maxpoint = p2
         return maxpoint[0], maxpoint[1]
 
@@ -112,8 +112,8 @@ class PiceManager:
         minpoint = {0, 0}
         for p1 in p:
             for p2 in p1:
-                if (mindist > PiceManager().getPointDistance(midpoint, p2)):
-                    mindist = PiceManager().getPointDistance(midpoint, p2)
+                if (mindist > self.getPointDistance(midpoint, p2)):
+                    mindist = self.getPointDistance(midpoint, p2)
                     minpoint = p2
         return minpoint[0], minpoint[1]
 
@@ -126,12 +126,12 @@ class PiceManager:
 
     def drawRotationCircle(self, img, midpoint, maxpoint, classifireID):
         # Detected Pice
-        radius = PiceManager().getPointDistance(midpoint, maxpoint)
+        radius = self.getPointDistance(midpoint, maxpoint)
         cv2.circle(img, midpoint, int(radius), (0, 255, 0))
 
         # Orientation Pice
-        radius = PiceManager().getPointDistance(midpoint, PiceManager().normedMaxPosition(midpoint, classifireID))
-        cv2.circle(img, PiceManager().normedMaxPosition(midpoint, classifireID), 7, (0, 0, 255), -1)
+        radius = self.getPointDistance(midpoint, self.normedMaxPosition(midpoint, classifireID))
+        cv2.circle(img, self.normedMaxPosition(midpoint, classifireID), 7, (0, 0, 255), -1)
         cv2.circle(img, midpoint, int(radius), (255, 0, 0))
         pass
 
@@ -143,7 +143,7 @@ class PiceManager:
     def getCorners(self, img):
         pass
 
-    def getAllPices(self):
-        img_filtered, img_input = CameraManager.CameraManager().getImageFile()
+    def getAllPices(self,path=None):
+        img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
         # img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
-        return PiceManager().extractPices(img_filtered, img_input)
+        return self.extractPices(img_filtered, img_input)
