@@ -11,6 +11,8 @@ class CameraManager:
         thresh = cv2.threshold(gray, self.thresh_filter, 255, cv2.THRESH_BINARY)[1]
         thresh = cv2.erode(thresh, None, iterations=2)
         thresh = cv2.dilate(thresh, None, iterations=2)
+        cv2.imshow("Thresh", thresh)
+
         return thresh, image
 
     def getImageFilebyID(self, id):
