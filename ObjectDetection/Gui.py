@@ -79,6 +79,8 @@ class GUI:
         delay = 15
         thresh, width, height = getVideo(threshVar, erodeVar, dilateVar)
         can = Canvas(imageframe, width=width, height=height, bg="gray")
+        photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(thresh))
+        can.create_image(0, 0, image=photo, anchor=NW)
         can.pack()
 
         def update():
