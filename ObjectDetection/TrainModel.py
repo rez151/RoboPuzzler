@@ -9,10 +9,13 @@ class TrainModel:
         def trainModel(self):
                 K.set_image_dim_ordering('tf')
 
-                image_width = 224
-                image_hight = 224
+                trainPath = 'Images/train'
+                validationPath = 'Images/validate'
 
+                image_width = 150
+                image_hight = 150
                 batch_size = 16
+
 
 
                 model = Sequential()
@@ -39,22 +42,18 @@ class TrainModel:
                               optimizer='adam',
                               metrics=['accuracy'])
 
-                train_datagen = ImageDataGenerator(
-                        rescale=1. / 255,
-                        shear_range=0.2,
-                        zoom_range=0.2,
-                        horizontal_flip=True)
+                train_datagen = ImageDataGenerator(rescale=1. / 255)
 
                 test_datagen = ImageDataGenerator(rescale=1. / 224)
 
                 train_generator = train_datagen.flow_from_directory(
-                        'Images/train_images',
+                        trainPath,
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')
 
                 validation_generator = test_datagen.flow_from_directory(
-                        'Images/validation_images',
+                        validationPath,
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')

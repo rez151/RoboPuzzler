@@ -24,7 +24,7 @@ class PiceManager:
                 extractPiceClassification  = self.getExtractPice(img_input, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
-                classifierID,id = Classifier.Classifire().Classifier(extractPiceClassification)
+                classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
 
@@ -147,6 +147,6 @@ class PiceManager:
         pass
 
     def getAllPices(self,path=None):
-        img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
-        # img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
+        # img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
+        img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
         return self.extractPices(img_filtered, img_input)
