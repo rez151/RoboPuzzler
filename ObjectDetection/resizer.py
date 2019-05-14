@@ -24,53 +24,44 @@ def resize(f, output_path):
         print("file " + str(f) + " not found")
 
 
-width, height = 300, 300
+width, height = 224, 224
 
-input_path_elefant = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Elefant"
-input_path_giraffe = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Giraffe"
-input_path_kamel = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Kamel"
-input_path_krokodil = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Krokodil"
-input_path_loewe = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Loewe"
-input_path_nilpferd = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Nilpferd"
-input_path_zebra = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images/Zebra"
+input_path_elefant = "train_images/Elefant"
+input_path_frosch = "train_images/Frosch"
+input_path_lowe = "train_images/Lowe"
+input_path_schmetterling = "train_images/Schmetterling"
+input_path_sonne = "train_images/Sonne"
+input_path_vogel = "train_images/Vogel"
 
-output_path_elefant = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Elefant/"
-output_path_giraffe = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Giraffe/"
-output_path_kamel = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Kamel/"
-output_path_krokodil = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Krokodil/"
-output_path_loewe = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Loewe/"
-output_path_nilpferd = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Nilpferd/"
-output_path_zebra = "/home/resi/PycharmProjects/RoboPuzzler/ObjectDetection/train_images_" + str(width) + "x" + str(
-    height) + "/Zebra/"
+
+output_path_elefant = "train_images_" + str(width) + "x" + str(height) + "/Elefant/"
+output_path_giraffe = "train_images_" + str(width) + "x" + str(height) + "/Frosch/"
+output_path_kamel = "train_images_" + str(width) + "x" + str(height) + "/Lowe/"
+output_path_krokodil = "train_images_" + str(width) + "x" + str(height) + "/Schmetterling/"
+output_path_loewe = "train_images_" + str(width) + "x" + str(height) + "/Sonne/"
+output_path_nilpferd = "train_images_" + str(width) + "x" + str(height) + "/Vogel/"
+
 
 files_elefant = glob.glob(os.path.join(input_path_elefant, "*.jpg"))
-files_giraffe = glob.glob(os.path.join(input_path_giraffe, "*.jpg"))
-files_kamel = glob.glob(os.path.join(input_path_kamel, "*.jpg"))
-files_krokodil = glob.glob(os.path.join(input_path_krokodil, "*.jpg"))
-files_loewe = glob.glob(os.path.join(input_path_loewe, "*.jpg"))
-files_nilpferd = glob.glob(os.path.join(input_path_nilpferd, "*.jpg"))
-files_zebra = glob.glob(os.path.join(input_path_zebra, "*.jpg"))
+files_frosch = glob.glob(os.path.join(input_path_frosch, "*.jpg"))
+files_lowe = glob.glob(os.path.join(input_path_lowe, "*.jpg"))
+files_schmetterling = glob.glob(os.path.join(input_path_schmetterling, "*.jpg"))
+files_sonne = glob.glob(os.path.join(input_path_sonne, "*.jpg"))
+files_vogel = glob.glob(os.path.join(input_path_vogel, "*.jpg"))
+
 
 pool = mp.Pool(mp.cpu_count())
 
-print('1/7')
+print('1/6')
 [pool.apply(resize, args=(f, output_path_elefant)) for f in files_elefant]
-print('2/7')
-[pool.apply(resize, args=(f, output_path_giraffe)) for f in files_giraffe]
-print('3/7')
-[pool.apply(resize, args=(f, output_path_kamel)) for f in files_kamel]
-print('4/7')
-[pool.apply(resize, args=(f, output_path_krokodil)) for f in files_krokodil]
-print('5/7')
-[pool.apply(resize, args=(f, output_path_loewe)) for f in files_loewe]
-print('6/7')
-[pool.apply(resize, args=(f, output_path_nilpferd)) for f in files_nilpferd]
-print('7/7')
-[pool.apply(resize, args=(f, output_path_zebra)) for f in files_zebra]
+print('2/6')
+[pool.apply(resize, args=(f, output_path_giraffe)) for f in files_frosch]
+print('3/6')
+[pool.apply(resize, args=(f, output_path_kamel)) for f in files_lowe]
+print('4/6')
+[pool.apply(resize, args=(f, output_path_krokodil)) for f in files_schmetterling]
+print('5/6')
+[pool.apply(resize, args=(f, output_path_loewe)) for f in files_sonne]
+print('6/6')
+[pool.apply(resize, args=(f, output_path_nilpferd)) for f in files_vogel]
 print('done')

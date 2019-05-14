@@ -1,5 +1,6 @@
 import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
+from PIL import Image
 import cv2
 import math
 import numpy as np
@@ -11,6 +12,8 @@ class PiceManager:
         extractedPices = []
         cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
+
+        image = img_input.copy()
 
         for i, ctr in enumerate(sorted_ctrs):
             if (i == 0):
@@ -26,25 +29,25 @@ class PiceManager:
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
 
                 # draw line from normedpoint and local maxpoint to midpoint
-                cv2.line(img_input,midpoint,normedmaxpoint,(255,0,0),1)
-                cv2.line(img_input,midpoint,maxpoint,(0,255,0),1)
+                cv2.line(image,midpoint,normedmaxpoint,(255,0,0),1)
+                cv2.line(image,midpoint,maxpoint,(0,255,0),1)
                 # correct Rotation
                 extractPice = imutils.rotate_bound(extractPice, rotation)
                 # draw Contours
-                cv2.drawContours(img_input, [ctr], 0, (0, 0, 255), 2)
+                cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
                 # draw Midpoint
-                cv2.circle(img_input, midpoint, 7, (0, 255, 0), -1)
+                cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
                 # draw MaxPoint
-                cv2.circle(img_input, maxpoint, 7, (0, 255, 0), -1)
+                cv2.circle(image, maxpoint, 7, (0, 255, 0), -1)
                 # draw Classification text
-                cv2.putText(img_input, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
+                cv2.putText(image, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
                 # draw rotation Circles
-                PiceManager().drawRotationCircle(img_input, midpoint, maxpoint, classifierID)
+                PiceManager().drawRotationCircle(image, midpoint, maxpoint, classifierID)
                 # print progress status
                 print(str(int((i * 100) / (sorted_ctrs.__len__() - 1))) + "% Done")
 
                 extractedPices.insert(i, [i, extractPice, midpoint, str(id), rotation])
-        return extractedPices, img_input
+        return extractedPices, image
 
     def getExtractPice(self, img_filtered, ctr):
         x, y, w, h = cv2.boundingRect(ctr)

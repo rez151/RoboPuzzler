@@ -45,6 +45,7 @@ class CameraManager:
 
 
 
+
 if __name__ == '__main__':
     cv2.imshow("Demo",cv2.resize(CameraManager().getCameraFrameInput()[0], (1080, 720)))
     cv2.waitKey(0)
