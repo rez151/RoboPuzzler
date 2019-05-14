@@ -28,26 +28,26 @@ class CameraManager:
 
     def getCameraFrameInput(self):
         cap = cv2.VideoCapture(1)
-        if cap.isOpened():
-            _, img_input = cap.read()
-            cap.release()
-            if img_input is not None:
-                try:
-                    pts1 = np.float32((tm.trackMarker().getMarker()))
-                    print(pts1)
-                    pts2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
-                    M = cv2.getPerspectiveTransform(pts1, pts2)
-                    img_input = cv2.warpPerspective(img_input, M, (300, 300))
-                except: Exception
+        _, img_input = cap.read()
+        try:
+            if(tm.trackMarker().getMarker().__sizeof__()>3):
+                image_width = 400
+                image_hight = 300
+                pts1 = np.float32((tm.trackMarker().getMarker()))
+                print(pts1)
+                pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
+                M = cv2.getPerspectiveTransform(pts1, pts2)
+                img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
+        except: Exception
 
-                gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (17, 17), 0)
-                # gray = cv2.medianBlur(gray, 17)
-                # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
-                #thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
-                thresh = cv2.threshold(gray, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-                thresh = cv2.erode(thresh, None, iterations=8)
-                thresh = cv2.dilate(thresh, None, iterations=2)
+        gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (17, 17), 0)
+        # gray = cv2.medianBlur(gray, 17)
+        # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
+        #thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
+        thresh = cv2.threshold(gray, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        thresh = cv2.erode(thresh, None, iterations=8)
+        thresh = cv2.dilate(thresh, None, iterations=2)
         return thresh, img_input
 
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     thresh,image = CameraManager().getCameraFrameInput()
 
 
-    cnts, _ = cv2.findContours(CameraManager().getCameraFrameInput()[0], cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    cnts, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
     sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
     for i, ctr in enumerate(sorted_ctrs):
@@ -76,9 +76,9 @@ if __name__ == '__main__':
             cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
             extractPice = CameraManager().getExtractPice(thresh,ctr)
             # cv2.imwrite("Images/test/"+str(i)+".jpg",extractPice)
+    cv2.imshow("Demo", image)
+    cv2.imshow("Demo2", thresh)
 
-    cv2.imshow("Demo", cv2.resize(image, (1080, 720)))
-    cv2.imshow("Demo2", cv2.resize(CameraManager().getCameraFrameInput()[0], (1080, 720)))
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()

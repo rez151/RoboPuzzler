@@ -31,8 +31,8 @@ class trackMarker:
             cv2.circle(img, midpoint,2,self.RED,-1)
             midpointlist.append(list(midpoint))
         print(midpointlist)
-        cv2.imshow('Main window', img)
-        cv2.imshow('Thresh window', thresh)
+        #cv2.imshow('Main window', img)
+        #cv2.imshow('Thresh window', thresh)
         return midpointlist
 
 
