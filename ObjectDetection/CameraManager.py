@@ -30,8 +30,8 @@ class CameraManager:
         cap = cv2.VideoCapture(1)
         _, img_input = cap.read()
         if(tm.trackMarker().getMarker().__sizeof__()>3):
-            image_width = 1080
-            image_hight = 720
+            image_width = int(2070 /2)
+            image_hight = int(1680 /2)
             pts1 = np.float32((tm.trackMarker().getMarker()))
             print(pts1)
             pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])

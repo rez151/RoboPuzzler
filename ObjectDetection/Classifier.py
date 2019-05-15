@@ -46,7 +46,9 @@ class Classifire:
 
 
         prediction = model.predict(image)
+
         id = prediction.argmax(1)[0]
+        print("prediction in %: "+str(prediction[0][id]*100))
 
         if (id == 0):
             return "Elefant", id
