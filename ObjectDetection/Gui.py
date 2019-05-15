@@ -9,6 +9,11 @@ import cv2
 class GUI:
     def mainLoop(self):
 
+        def gets():
+            print("Threshold " + str(scalethresh.get()))
+            print("Erode " + str(scaleerode.get()))
+            print("Dilate " + str(scaledilate.get()))
+
         root = Tk()
         root.title("Rob der Puzzler")
 
@@ -24,6 +29,7 @@ class GUI:
         menubar = Menu(root)
         root.config(menu=menubar)
 
+
         options = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Options", menu=options)
         options.add_command(label="Exit", command=root.quit)
@@ -33,28 +39,36 @@ class GUI:
         filemenu.add_command(label="Open", command=donothing)
 
 
-        lbl_thresh  = Label(configframe,text="Threschhold: ")
+        lbl_thresh  = Label(configframe,text="Threshold: ")
         lbl_thresh.grid(row=0, column=0)
 
-        threshVar = 0
-        scalethresh = Scale( configframe, variable=threshVar, orient=HORIZONTAL, from_=0, to=255)
+        scalethresh = Scale(configframe, from_=0, to=255, orient=HORIZONTAL)
+        threshVar = scalethresh.get()
         scalethresh.grid(row=0, column=1)
 
         lbl_erode = Label(configframe, text="Erode: ")
         lbl_erode.grid(row=1, column=0)
 
-        erodeVar = 0
-        scaleerode = Scale(configframe, variable=erodeVar, orient=HORIZONTAL, from_=0, to=15)
+        scaleerode = Scale(configframe, from_=0, to=15, orient=HORIZONTAL)
+        erodeVar = scaleerode.get()
         scaleerode.grid(row=1, column=1)
 
         lbl_dilate = Label(configframe, text="Dilate: ")
         lbl_dilate.grid(row=2, column=0)
 
-        dilateVar = 0
-        scaledilate = Scale(configframe, variable=dilateVar, orient=HORIZONTAL, from_=0, to=15)
+        #dilateVar = scaledilate.get()
+        scaledilate = Scale(configframe,  from_=0, to=15, orient=HORIZONTAL)
+        dilateVar = scaledilate.get()
         scaledilate.grid(row=2, column=1)
 
-        lbl_model  = Label(configframe, text="Model: ")
+        button = Button(configframe, text="Dilate", command=gets)
+        button.grid(row=5, column=1)
+
+        label_dil = Label(configframe, text="Label")
+        label_dil.grid(row=6, column=1)
+
+
+        lbl_model = Label(configframe, text="Model: ")
         lbl_model.grid(row=3, column=0)
 
         modelPath = StringVar()
@@ -71,12 +85,7 @@ class GUI:
         buttonfileopener = Button(configframe,text="...", command=openFile,fg="black")
         buttonfileopener.grid(row=3, column=2)
 
-
-
-
-
-
-        delay = 15
+        delay = 1
         thresh, width, height = getVideo(threshVar, erodeVar, dilateVar)
         can = Canvas(imageframe, width=width, height=height, bg="gray")
         can.pack()
@@ -90,12 +99,7 @@ class GUI:
 
         update()
 
-
-
-
-
         root.mainloop()
-
 
 
 def donothing():
@@ -117,10 +121,8 @@ def getVideo(threshVar,erodeVar,dilateVar):
         thresh = cv2.threshold(gray, threshVar, 255, cv2.THRESH_BINARY)[1]
         thresh = cv2.erode(thresh, None, iterations=erodeVar)
         thresh = cv2.dilate(thresh, None, iterations=dilateVar)
+
         return thresh,width,height
-
-
-
 
 if __name__ == '__main__':
     GUI().mainLoop()
