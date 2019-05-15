@@ -40,7 +40,7 @@ class Classifire:
         model.add(Dense(6))
         model.add(Activation('sigmoid'))
 
-        model.load_weights('model/first_train.h5')
+        model.load_weights('model/first_try.h5')
 
 
         prediction = model.predict(image)
