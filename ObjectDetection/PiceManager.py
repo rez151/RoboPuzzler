@@ -24,7 +24,7 @@ class PiceManager:
                 extractPiceClassification  = self.getExtractPice(img_input, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
-                classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
+                classifierID,id =  Classifier.Classifire().Classifier(extractPice)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
 
