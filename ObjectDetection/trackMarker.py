@@ -13,12 +13,7 @@ class trackMarker:
 
     def getMarker(self):
         cap = cv2.VideoCapture(1)
-
         __, img = cap.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # blur = cv2.medianBlur(gray, 5)
-        blur = cv2.GaussianBlur(gray, (3, 3), 0)
-        __, thresh = cv2.threshold(blur, 100, 255, cv2.THRESH_BINARY)
 
         markers = tracker.find_markers(img)
         midpointlist = list()
@@ -31,8 +26,7 @@ class trackMarker:
             cv2.circle(img, midpoint,2,self.RED,-1)
             midpointlist.append(list(midpoint))
         print(midpointlist)
-        #cv2.imshow('Main window', img)
-        #cv2.imshow('Thresh window', thresh)
+        cv2.imshow('Main window', cv2.resize(img.copy(), (600,400)))
         return midpointlist
 
 
