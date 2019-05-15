@@ -9,19 +9,21 @@ import cv2
 class Classifire:
 
     def Classifier(self,img):
-        image = cv2.resize(img, (224, 224))
+        image_width = 150
+        image_hight = 150
+
+        image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
         cv2.imshow("Re", image)
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 
-        image_width = 224
-        image_hight = 224
+
 
         K.set_image_dim_ordering('tf')
 
         model = Sequential()
-        model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 3)))
+        model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 1)))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -44,7 +46,9 @@ class Classifire:
 
 
         prediction = model.predict(image)
+
         id = prediction.argmax(1)[0]
+        print("prediction in %: "+str(prediction[0][id]*100))
 
         if (id == 0):
             return "Elefant", id
