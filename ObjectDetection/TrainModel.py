@@ -16,8 +16,6 @@ class TrainModel:
                 image_hight = 150
                 batch_size = 16
 
-
-
                 model = Sequential()
                 model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 3)))
                 model.add(Activation('relu'))

@@ -9,14 +9,16 @@ import cv2
 class Classifire:
 
     def Classifier(self,img):
-        image = cv2.resize(img, (224, 224))
+        image_width = 150
+        image_hight = 150
+
+        image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
         cv2.imshow("Re", image)
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 
-        image_width = 224
-        image_hight = 224
+
 
         K.set_image_dim_ordering('tf')
 

@@ -8,7 +8,7 @@ class Main:
         cv2.imshow("Input", img_input)
         file =open("output/cordinaten.txt","w")
         for imageID, piceImg, midPoint, id, rotation in extractedPices:
-            # cv2.imshow(str(imageID),piceImg)
+            cv2.imshow(str(imageID),piceImg)
             print("ID: " + str(imageID) + " X: " + str(midPoint[0]) + " Y: " + str(midPoint[1]) + " C: " + id + " R: "+ str(round(rotation,2))+"°")
             file.write(id+","+str(midPoint[0])+","+str(midPoint[1])+","+str(round(rotation,2))+"\n")
         file.close()
