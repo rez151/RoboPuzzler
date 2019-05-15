@@ -29,16 +29,14 @@ class CameraManager:
     def getCameraFrameInput(self):
         cap = cv2.VideoCapture(1)
         _, img_input = cap.read()
-        try:
-            if(tm.trackMarker().getMarker().__sizeof__()>3):
-                image_width = 400
-                image_hight = 300
-                pts1 = np.float32((tm.trackMarker().getMarker()))
-                print(pts1)
-                pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
-                M = cv2.getPerspectiveTransform(pts1, pts2)
-                img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
-        except: Exception
+        if(tm.trackMarker().getMarker().__sizeof__()>3):
+            image_width = 600
+            image_hight = 400
+            pts1 = np.float32((tm.trackMarker().getMarker()))
+            print(pts1)
+            pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
+            M = cv2.getPerspectiveTransform(pts1, pts2)
+            img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
 
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (17, 17), 0)
