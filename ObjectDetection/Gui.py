@@ -99,9 +99,7 @@ class GUI:
 
         update()
 
-
         root.mainloop()
-
 
 def donothing():
     print("placeholder")
