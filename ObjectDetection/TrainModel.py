@@ -23,11 +23,11 @@ class TrainModel:
 
                 model.add(Conv2D(32, (3, 3)))
                 model.add(Activation('relu'))
-                model.add(MaxPooling2D(pool_size=(2, 2), dim_ordering="tf"))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
 
                 model.add(Conv2D(64, (3, 3)))
                 model.add(Activation('relu'))
-                model.add(MaxPooling2D(pool_size=(2, 2), dim_ordering="tf"))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
                 model.add(Dropout(0.1))
 
                 model.add(Flatten())

@@ -82,8 +82,7 @@ def find_markers(img):
     __, thresh = cv2.threshold(blur, 120, 255, cv2.THRESH_BINARY)
     # cv2.imshow("markerfile", cv2.resize(thresh.copy(), (600,400)))
 
-    contours, __ = cv2.findContours(thresh.copy(), cv2.RETR_TREE,
-                                    cv2.CHAIN_APPROX_SIMPLE)
+    contours, __ = cv2.findContours(thresh.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     markers = dict()
 

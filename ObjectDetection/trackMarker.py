@@ -12,7 +12,7 @@ class trackMarker:
 
 
     def getMarker(self):
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         __, img = cap.read()
 
         markers = tracker.find_markers(img)
