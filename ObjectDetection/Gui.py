@@ -1,8 +1,9 @@
-
 import tkinter
 from tkinter import *
 from tkinter import filedialog
+import threading
 
+import PIL
 from PIL import Image
 from PIL import ImageTk
 import cv2
@@ -13,7 +14,7 @@ class GUI:
     threshVar = 100
     erodeVar = 8
     dilateVar = 2
-
+    cap = cv2.VideoCapture(0)
 
     def mainLoop(self):
         root = Tk()
@@ -49,19 +50,7 @@ class GUI:
         root.mainloop()
 
 
-    def videoPlayer(self,imageframe):
-        can = Canvas(imageframe, width=600,height=400)
-        can.create_image(0, 0, anchor=NW)
-        can.pack()
-        self.update(imageframe, can)
 
-    def update(self, root, can, delay=1):
-        thresh, width, height = self.getVideo()
-        image = Image.fromarray(thresh)
-        image = ImageTk.PhotoImage(image)
-        can.create_image(0, 0, image=image, anchor=NW)
-        can.update()
-        root.after(delay, self.update(root,can))
 
 
 
@@ -128,6 +117,26 @@ class GUI:
             thresh = cv2.dilate(thresh, None, iterations=self.dilateVar)
 
             return thresh,width,height
+
+    def videoPlayer(self,imageframe):
+        lbl = Label(imageframe)
+        lbl.pack()
+        self.update(imageframe, lbl)
+
+    def update(self,lbl, delay=10):
+        _, frame = self.cap.read()
+        frame = cv2.flip(frame, 1)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        gray = cv2.GaussianBlur(gray, (17, 17), 0)
+        thresh = cv2.threshold(gray, self.threshVar, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.erode(thresh, None, iterations=self.erodeVar)
+        thresh = cv2.dilate(thresh, None, iterations=self.dilateVar)
+        img = PIL.Image.fromarray(thresh)
+        imgtk = ImageTk.PhotoImage(image=img)
+        lbl.imgtk =imgtk
+        lbl.config(image=imgtk)
+        lbl.after(delay, self.update())
+
 
 
 def donothing():
