@@ -24,7 +24,7 @@ def resize(f, output_path):
         print("file " + str(f) + " not found")
 
 
-width, height = 150, 150
+width, height = 224, 224
 
 input_path_elefant = "Images/test/Elefant/"
 input_path_frosch = "Images/test/Frosch"
