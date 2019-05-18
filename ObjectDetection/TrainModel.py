@@ -35,7 +35,6 @@ class TrainModel:
                 model.add(Dropout(0.1))
 
                 model.add(Flatten())
-                model.add(Dense(64))
                 model.add(Activation('relu'))
                 model.add(Dropout(0.5))
                 model.add(Dense(6))
@@ -56,7 +55,7 @@ class TrainModel:
                          ReduceLROnPlateau(
                                  monitor='val_loss',
                                  factor=0.1,
-                                 patience=1
+                                 patience=3
                          )
                 ]
 
@@ -97,32 +96,33 @@ class TrainModel:
                 try:
                         history = model.fit_generator(
                                 train_generator,
-                                #callbacks=callback_list,
                                 callbacks=callback_list,
-                                epochs=1,
-                                steps_per_epoch=5, #6000/batch_size,
+                                #callbacks=callback_list,
+                                epochs=20,
+                                steps_per_epoch=6000/batch_size,
                                 validation_data=validation_generator,
-                                validation_steps=1, #2466/batch_size
+                                validation_steps=2466/batch_size,
                                 verbose = 1
                                 )
 
-                        print(history.history)
-                        # summarize history for accuracy
-                        plt.plot(history.history['acc'])
-                        plt.plot(history.history['val_acc'])
-                        plt.title('model accuracy')
-                        plt.ylabel('accuracy')
-                        plt.xlabel('epoch')
-                        plt.legend(['train', 'test'], loc='upper left')
-                        plt.show()
-                        # summarize history for loss
-                        plt.plot(history.history['loss'])
-                        plt.plot(history.history['val_loss'])
-                        plt.title('model loss')
-                        plt.ylabel('loss')
-                        plt.xlabel('epoch')
-                        plt.legend(['train', 'test'], loc='upper left')
-                        plt.show()
+
+                        # print(history.history)
+                        # # summarize history for accuracy
+                        # plt.plot(history.history['acc'])
+                        # plt.plot(history.history['val_acc'])
+                        # plt.title('model accuracy')
+                        # plt.ylabel('accuracy')
+                        # plt.xlabel('epoch')
+                        # plt.legend(['train', 'test'], loc='upper left')
+                        # plt.show()
+                        # # summarize history for loss
+                        # plt.plot(history.history['loss'])
+                        # plt.plot(history.history['val_loss'])
+                        # plt.title('model loss')
+                        # plt.ylabel('loss')
+                        # plt.xlabel('epoch')
+                        # plt.legend(['train', 'test'], loc='upper left')
+                        # plt.show()
 
                         model.save_weights('model/first_try.h5')
                 except KeyboardInterrupt:
