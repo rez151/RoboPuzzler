@@ -97,7 +97,6 @@ class TrainModel:
                         history = model.fit_generator(
                                 train_generator,
                                 callbacks=callback_list,
-                                #callbacks=callback_list,
                                 epochs=20,
                                 steps_per_epoch=6000/batch_size,
                                 validation_data=validation_generator,
@@ -105,8 +104,6 @@ class TrainModel:
                                 verbose = 1
                                 )
 
-
-                        # print(history.history)
                         # # summarize history for accuracy
                         # plt.plot(history.history['acc'])
                         # plt.plot(history.history['val_acc'])
@@ -115,6 +112,7 @@ class TrainModel:
                         # plt.xlabel('epoch')
                         # plt.legend(['train', 'test'], loc='upper left')
                         # plt.show()
+                        # plt.savefig('logs/history_for_accuracy{}.jpg'.format(time()))
                         # # summarize history for loss
                         # plt.plot(history.history['loss'])
                         # plt.plot(history.history['val_loss'])
@@ -123,6 +121,7 @@ class TrainModel:
                         # plt.xlabel('epoch')
                         # plt.legend(['train', 'test'], loc='upper left')
                         # plt.show()
+                        # plt.savefig('logs/history_for_loss{}.jpg'.format(time()))
 
                         model.save_weights('model/first_try.h5')
                 except KeyboardInterrupt:
