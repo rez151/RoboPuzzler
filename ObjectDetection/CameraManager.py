@@ -41,12 +41,12 @@ class CameraManager:
             img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
 
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (23, 23), 0)
+        gray2 = cv2.GaussianBlur(gray, (23, 23), 0)
         # gray = cv2.medianBlur(gray, 17)
         # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
         #thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
-        thresh = cv2.threshold(gray, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        thresh = cv2.erode(thresh, None, iterations=8)
+        thresh = cv2.threshold(gray2, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        thresh = cv2.erode(thresh, None, iterations=9)
         thresh = cv2.dilate(thresh, None, iterations=2)
         cv2.imshow("give me the fucking trash", thresh)
         return thresh, img_input, gray

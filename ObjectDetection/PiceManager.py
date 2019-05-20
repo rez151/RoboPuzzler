@@ -8,7 +8,7 @@ import imutils
 
 
 class PiceManager:
-    def extractPices(self, img_filtered, img_input,gray):
+    def extractPices(self, img_filtered, img_input, gray):
         extractedPices = []
         _, cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
@@ -32,7 +32,7 @@ class PiceManager:
                 cv2.line(image,midpoint,normedmaxpoint,(255,0,0),1)
                 cv2.line(image,midpoint,maxpoint,(0,255,0),1)
                 # correct Rotation
-                extractPice = imutils.rotate_bound(extractPice, rotation)
+                extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
                 # draw Contours
                 cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
                 # draw Midpoint

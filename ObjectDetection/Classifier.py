@@ -14,7 +14,7 @@ class Classifire:
 
         image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
-        cv2.imshow("resize", image)
+        # cv2.imshow("resize", image)
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 
@@ -29,11 +29,11 @@ class Classifire:
 
         model.add(Conv2D(32, (3, 3)))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2), dim_ordering="tf"))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Conv2D(64, (3, 3)))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2), dim_ordering="tf"))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
 
 
         model.add(Flatten())
@@ -43,7 +43,7 @@ class Classifire:
         model.add(Dense(6))
         model.add(Activation('softmax'))
 
-        model.load_weights('model/32_32_64_DROP01_DROP05.h5')
+        model.load_weights('model/first_try.h5')
 
 
         prediction = model.predict(image)
