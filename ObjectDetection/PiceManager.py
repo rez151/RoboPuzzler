@@ -8,7 +8,7 @@ import imutils
 
 
 class PiceManager:
-    def extractPices(self, img_filtered, img_input):
+    def extractPices(self, img_filtered, img_input,gray):
         extractedPices = []
         _, cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
@@ -21,7 +21,7 @@ class PiceManager:
             else:
                 # get Extracted pice
                 extractPice = self.getExtractPice(img_filtered, ctr)
-                extractPiceClassification  = self.getExtractPice(img_input, ctr)
+                extractPiceClassification  = self.getExtractPice(gray, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
                 classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
@@ -148,8 +148,8 @@ class PiceManager:
 
     def getAllPicesbyPath(self,path=None):
         # img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
-        img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
-        return self.extractPices(img_filtered, img_input)
+        img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput()
+        return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self,img_filtered,img_input):
         return self.extractPices(img_filtered, img_input)

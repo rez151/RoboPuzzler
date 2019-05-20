@@ -49,7 +49,7 @@ class CameraManager:
         thresh = cv2.erode(thresh, None, iterations=8)
         thresh = cv2.dilate(thresh, None, iterations=2)
         cv2.imshow("give me the fucking trash", thresh)
-        return thresh, img_input
+        return thresh, img_input, gray
 
 
     def setThresh_filter(self,value):
