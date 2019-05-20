@@ -22,15 +22,15 @@ class TrainModel:
                 batch_size = 10
 
                 model = Sequential()
-                model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 1)))
-                model.add(Activation('relu'))
-                model.add(MaxPooling2D(pool_size=(2, 2)))
-
-                model.add(Conv2D(32, (3, 3)))
+                model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 3)))
                 model.add(Activation('relu'))
                 model.add(MaxPooling2D(pool_size=(2, 2)))
 
                 model.add(Conv2D(64, (3, 3)))
+                model.add(Activation('relu'))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
+
+                model.add(Conv2D(128, (3, 3)))
                 model.add(Activation('relu'))
                 model.add(MaxPooling2D(pool_size=(2, 2)))
                 model.add(Dropout(0.1))
@@ -71,14 +71,14 @@ class TrainModel:
 
                 train_generator = train_datagen.flow_from_directory(
                         trainPath,
-                        color_mode='grayscale',
+                        color_mode='rgb',
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')
 
                 validation_generator = test_datagen.flow_from_directory(
                         validationPath,
-                        color_mode='grayscale',
+                        color_mode='rgb',
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')
