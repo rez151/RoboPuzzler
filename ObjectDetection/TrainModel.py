@@ -22,15 +22,15 @@ class TrainModel:
                 batch_size = 10
 
                 model = Sequential()
-                model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 3)))
+                model.add(Conv2D(32, (3, 3), input_shape=(image_width, image_hight, 1)))
+                model.add(Activation('relu'))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
+
+                model.add(Conv2D(32, (3, 3)))
                 model.add(Activation('relu'))
                 model.add(MaxPooling2D(pool_size=(2, 2)))
 
                 model.add(Conv2D(64, (3, 3)))
-                model.add(Activation('relu'))
-                model.add(MaxPooling2D(pool_size=(2, 2)))
-
-                model.add(Conv2D(128, (3, 3)))
                 model.add(Activation('relu'))
                 model.add(MaxPooling2D(pool_size=(2, 2)))
                 model.add(Dropout(0.1))
@@ -46,7 +46,7 @@ class TrainModel:
                 callback_list = [
                          EarlyStopping(
                                  monitor='acc',
-                                 patience=1,
+                                 patience=2,
                          ),
                          ModelCheckpoint(
                                  filepath='model/first_try.h5',
@@ -71,14 +71,14 @@ class TrainModel:
 
                 train_generator = train_datagen.flow_from_directory(
                         trainPath,
-                        color_mode='rgb',
+                        color_mode='grayscale',
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')
 
                 validation_generator = test_datagen.flow_from_directory(
                         validationPath,
-                        color_mode='rgb',
+                        color_mode='grayscale',
                         target_size=(image_width, image_hight),
                         batch_size=batch_size,
                         class_mode='categorical')
@@ -113,7 +113,7 @@ class TrainModel:
                         plt.xlabel('epoch')
                         plt.legend(['train', 'test'], loc='upper left')
                         plt.show()
-                        plt.savefig('logs/history_for_accuracy{}.jpg'.format(time()))
+                        plt.savefig('logs/history_for_accuracy{}.jpg'.format(time))
                         # summarize history for loss
                         plt.plot(history.history['loss'])
                         plt.plot(history.history['val_loss'])
@@ -122,7 +122,7 @@ class TrainModel:
                         plt.xlabel('epoch')
                         plt.legend(['train', 'test'], loc='upper left')
                         plt.show()
-                        plt.savefig('logs/history_for_loss{}.jpg'.format(time()))
+                        plt.savefig('logs/history_for_loss{}.jpg'.format(time))
 
                         model.save_weights('model/first_try.h5')
                 except KeyboardInterrupt:

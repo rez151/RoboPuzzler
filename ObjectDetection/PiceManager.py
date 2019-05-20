@@ -147,8 +147,8 @@ class PiceManager:
         pass
 
     def getAllPicesbyPath(self,path=None):
-        # img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
-        img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput()
+        img_filtered, img_input, gray= CameraManager.CameraManager().getImageFile(path)
+        # img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput()
         return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self,img_filtered,img_input):
