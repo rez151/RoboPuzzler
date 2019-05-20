@@ -14,7 +14,7 @@ class Classifire:
 
         image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
-        cv2.imshow("Re", image)
+        cv2.imshow("resize", image)
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 

@@ -26,20 +26,20 @@ def resize(f, output_path):
 
 width, height = 224, 224
 
-input_path_elefant = "Images/test/Elefant/"
-input_path_frosch = "Images/test/Frosch"
-input_path_lowe = "Images/test/Lowe"
-input_path_schmetterling = "Images/test/Schmetterling"
-input_path_sonne = "Images/test/Sonne"
-input_path_vogel = "Images/test/Vogel"
+input_path_elefant = "Images/validate/Elefant/output"
+input_path_frosch = "Images/validate/Frosch/output"
+input_path_lowe = "Images/validate/Lowe/output"
+input_path_schmetterling = "Images/validate/Schmetterling/output"
+input_path_sonne = "Images/validate/Sonne/output"
+input_path_vogel = "Images/validate/Vogel/output"
 
 
-output_path_elefant = "Images/test/" + str(width) + "x" + str(height) + "/Elefant/"
-output_path_giraffe = "Images/test/" + str(width) + "x" + str(height) + "/Frosch/"
-output_path_kamel = "Images/test/" + str(width) + "x" + str(height) + "/Lowe/"
-output_path_krokodil = "Images/test/" + str(width) + "x" + str(height) + "/Schmetterling/"
-output_path_loewe = "Images/test/" + str(width) + "x" + str(height) + "/Sonne/"
-output_path_nilpferd = "Images/test/" + str(width) + "x" + str(height) + "/Vogel/"
+output_path_elefant = "Images/validate/" + str(width) + "x" + str(height) + "/Elefant/"
+output_path_giraffe = "Images/validate/" + str(width) + "x" + str(height) + "/Frosch/"
+output_path_kamel = "Images/validate/" + str(width) + "x" + str(height) + "/Lowe/"
+output_path_krokodil = "Images/validate/" + str(width) + "x" + str(height) + "/Schmetterling/"
+output_path_loewe = "Images/validate/" + str(width) + "x" + str(height) + "/Sonne/"
+output_path_nilpferd = "Images/validate/" + str(width) + "x" + str(height) + "/Vogel/"
 
 
 files_elefant = glob.glob(os.path.join(input_path_elefant, "*.jpg"))
