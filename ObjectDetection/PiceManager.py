@@ -10,7 +10,7 @@ import imutils
 class PiceManager:
     def extractPices(self, img_filtered, img_input):
         extractedPices = []
-        cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        _, cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         image = img_input.copy()
@@ -24,7 +24,7 @@ class PiceManager:
                 extractPiceClassification  = self.getExtractPice(img_input, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
-                classifierID,id =  Classifier.Classifire().Classifier(extractPice)
+                classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
 
@@ -46,7 +46,7 @@ class PiceManager:
                 # print progress status
                 print(str(int((i * 100) / (sorted_ctrs.__len__() - 1))) + "% Done")
 
-                extractedPices.insert(i, [i, extractPice, midpoint, str(id), rotation])
+                extractedPices.insert(i, [i, extractPiceClassification, midpoint, str(id), rotation])
         return extractedPices, image
 
     def getExtractPice(self, img_filtered, ctr):
@@ -56,7 +56,7 @@ class PiceManager:
 
 
     def getContour(self, img):
-        cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        _, cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
@@ -146,7 +146,10 @@ class PiceManager:
     def getCorners(self, img):
         pass
 
-    def getAllPices(self,path=None):
+    def getAllPicesbyPath(self,path=None):
         # img_filtered, img_input = CameraManager.CameraManager().getImageFile(path)
         img_filtered, img_input = CameraManager.CameraManager().getCameraFrameInput()
+        return self.extractPices(img_filtered, img_input)
+
+    def getAllPicesbyFrame(self,img_filtered,img_input):
         return self.extractPices(img_filtered, img_input)

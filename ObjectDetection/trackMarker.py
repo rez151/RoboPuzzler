@@ -29,7 +29,7 @@ class trackMarker:
             cv2.circle(img, midpoint,2,self.RED,-1)
             midpointlist.append(list(midpoint))
 
-        cv2.imshow('Main window', cv2.resize(img.copy(), (600,400)))
+        # cv2.imshow('Main window', cv2.resize(img.copy(), (600,400)))
         return self.fourPoints(midpointlist)
 
     def fourPoints(self,midpointlist):

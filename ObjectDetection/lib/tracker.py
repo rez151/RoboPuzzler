@@ -80,7 +80,7 @@ def find_markers(img):
     #blur = cv2.medianBlur(gray, 5)
     blur = cv2.GaussianBlur(gray, (3, 3), 0)
     __, thresh = cv2.threshold(blur, 120, 255, cv2.THRESH_BINARY)
-    cv2.imshow("markerfile", cv2.resize(thresh.copy(), (600,400)))
+    # cv2.imshow("markerfile", cv2.resize(thresh.copy(), (600,400)))
 
     _, contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
