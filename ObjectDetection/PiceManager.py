@@ -1,6 +1,5 @@
 import ObjectDetection.CameraManager as CameraManager
 import ObjectDetection.Classifier as Classifier
-from PIL import Image
 import cv2
 import math
 import numpy as np
@@ -10,7 +9,7 @@ import imutils
 class PiceManager:
     def extractPices(self, img_filtered, img_input, gray):
         extractedPices = []
-        _, cnts, _ = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        cnts = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         image = img_input.copy()
@@ -56,7 +55,7 @@ class PiceManager:
 
 
     def getContour(self, img):
-        _, cnts, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        cnts = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
         sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
         for i, ctr in enumerate(sorted_ctrs):
@@ -68,7 +67,7 @@ class PiceManager:
     def getOrientationPoint(self, id):
         img_filtered, img_input = CameraManager.CameraManager().getImageFilebyID(id)
         normedPiceContour = self.getContour(img_filtered)
-        normedPice = self.getExtractPice(img_filtered, normedPiceContour)
+        # normedPice = self.getExtractPice(img_filtered, normedPiceContour)
         mx, my = self.getMidpoint(normedPiceContour)
         x, y = self.getPointMaxDistance((mx, my), normedPiceContour)
         return x, y, mx, my
@@ -138,9 +137,9 @@ class PiceManager:
         cv2.circle(img, midpoint, int(radius), (255, 0, 0))
         pass
 
-    def editForTensorflow(self, img):
-        img_as_string = cv2.imencode('.jpg', img)[1].tostring()
-        return img_as_string
+    # def editForTensorflow(self, img):
+    #     img_as_string = cv2.imencode('.jpg', img)[1].tostring()
+    #     return img_as_string
 
     # TODO x,y form Corner
     def getCorners(self, img):
@@ -148,8 +147,9 @@ class PiceManager:
 
     def getAllPicesbyPath(self,path=None):
         img_filtered, img_input, gray= CameraManager.CameraManager().getImageFile(path)
-        # img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput()
+        #
         return self.extractPices(img_filtered, img_input, gray)
 
-    def getAllPicesbyFrame(self,img_filtered,img_input):
-        return self.extractPices(img_filtered, img_input)
+    def getAllPicesbyFrame(self,img_filtered,img_input,cameraIndex):
+        img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput(cameraIndex)
+        return self.extractPices(img_filtered, img_input, gray)

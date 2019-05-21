@@ -24,8 +24,8 @@ class CameraManager:
         thresh = cv2.dilate(thresh, None, iterations=2)
         return thresh, image
 
-    def getCameraFrameInput(self):
-        cap = cv2.VideoCapture(1)
+    def getCameraFrameInput(self,cameraIndex):
+        cap = cv2.VideoCapture(cameraIndex)
         _, img_input = cap.read()
 
         if(tm.trackMarker().getMarker().__sizeof__()>3):

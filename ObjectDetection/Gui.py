@@ -5,9 +5,10 @@ import ObjectDetection.trackMarker as tm
 import ObjectDetection.PiceManager as pm
 import numpy as np
 
+cameraIndex=0
 
 width, height = 800, 600
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(cameraIndex)
 
 root = Tk()
 
@@ -34,6 +35,9 @@ lbl_dilate.grid(row=2, column=0)
 
 scaledilate = Scale(configframe, from_=0, to=15, orient=HORIZONTAL)
 scaledilate.grid(row=2, column=1)
+
+modelpath = Entry(configframe)
+modelpath.grid(row=3, column=1)
 
 
 imageframe = Frame(frame)

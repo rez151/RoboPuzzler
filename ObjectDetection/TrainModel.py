@@ -33,7 +33,6 @@ class TrainModel:
                 model.add(Conv2D(64, (3, 3)))
                 model.add(Activation('relu'))
                 model.add(MaxPooling2D(pool_size=(2, 2)))
-                model.add(Dropout(0.1))
 
                 model.add(Flatten())
                 model.add(Activation('relu'))
@@ -46,7 +45,7 @@ class TrainModel:
                 callback_list = [
                          EarlyStopping(
                                  monitor='acc',
-                                 patience=2,
+                                 patience=1,
                          ),
                          ModelCheckpoint(
                                  filepath='model/first_try.h5',
