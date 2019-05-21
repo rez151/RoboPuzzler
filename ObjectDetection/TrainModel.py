@@ -112,7 +112,7 @@ class TrainModel:
                         plt.xlabel('epoch')
                         plt.legend(['train', 'test'], loc='upper left')
                         plt.show()
-                        plt.savefig('logs/history_for_accuracy{}.jpg'.format(time))
+                        plt.savefig('logs/history_for_accuracy{}.jpg'.format(time.time()))
                         # summarize history for loss
                         plt.plot(history.history['loss'])
                         plt.plot(history.history['val_loss'])
@@ -121,7 +121,7 @@ class TrainModel:
                         plt.xlabel('epoch')
                         plt.legend(['train', 'test'], loc='upper left')
                         plt.show()
-                        plt.savefig('logs/history_for_loss{}.jpg'.format(time))
+                        plt.savefig('logs/history_for_loss{}.jpg'.format(time.time()))
 
                         model.save_weights('model/first_try.h5')
                 except KeyboardInterrupt:

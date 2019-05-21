@@ -17,4 +17,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection("TestImages/testwithallpicesnorotated.jpg")
+    Main().startDetection("TestImages/testwithallpicesrotated2.jpg")
