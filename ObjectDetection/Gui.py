@@ -5,7 +5,7 @@ import ObjectDetection.trackMarker as tm
 import ObjectDetection.PiceManager as pm
 import numpy as np
 
-cameraIndex=1
+cameraIndex=0
 
 width, height = 800, 600
 cap = cv2.VideoCapture(cameraIndex)

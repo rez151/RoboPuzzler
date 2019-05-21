@@ -10,13 +10,10 @@ class PiceManager:
     def extractPices(self, img_filtered, img_input, gray):
         extractedPices = []
         cnts = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
-        sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
-
         image = img_input.copy()
-
-        for i, ctr in enumerate(sorted_ctrs):
-            if (i == 0):
-                pass
+        for i, ctr in enumerate(cnts):
+            if (i == cnts.__len__()-1):
+                print("Done  \n")
             else:
                 # get Extracted pice
                 extractPice = self.getExtractPice(img_filtered, ctr)
@@ -26,6 +23,7 @@ class PiceManager:
                 classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
+
 
                 # draw line from normedpoint and local maxpoint to midpoint
                 cv2.line(image,midpoint,normedmaxpoint,(255,0,0),1)
@@ -41,12 +39,14 @@ class PiceManager:
                 # draw Classification text
                 cv2.putText(image, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
                 # draw rotation Circles
-                PiceManager().drawRotationCircle(image, midpoint, maxpoint, classifierID)
+                PiceManager().drawRotationCircle(image, midpoint, maxpoint, normedmaxpoint)
                 # print progress status
-                print(str(int((i * 100) / (sorted_ctrs.__len__() - 1))) + "% Done")
+                print(str(int((i * 100) / (cnts.__len__() - 2))) + "%")
 
                 extractedPices.insert(i, [i, extractPiceClassification, midpoint, str(id), rotation])
         return extractedPices, image
+
+
 
     def getExtractPice(self, img_filtered, ctr):
         x, y, w, h = cv2.boundingRect(ctr)
@@ -126,14 +126,14 @@ class PiceManager:
         y2 = ((x1 - x0) * math.sin(a)) + ((y1 - y0) * math.cos(a)) + y0;
         return x2, y2
 
-    def drawRotationCircle(self, img, midpoint, maxpoint, classifireID):
+    def drawRotationCircle(self, img, midpoint, maxpoint, normedmaxpoint):
         # Detected Pice
         radius = self.getPointDistance(midpoint, maxpoint)
         cv2.circle(img, midpoint, int(radius), (0, 255, 0))
 
         # Orientation Pice
-        radius = self.getPointDistance(midpoint, self.normedMaxPosition(midpoint, classifireID))
-        cv2.circle(img, self.normedMaxPosition(midpoint, classifireID), 7, (0, 0, 255), -1)
+        radius = self.getPointDistance(midpoint, normedmaxpoint)
+        cv2.circle(img, normedmaxpoint, 7, (0, 0, 255), -1)
         cv2.circle(img, midpoint, int(radius), (255, 0, 0))
         pass
 
