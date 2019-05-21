@@ -16,6 +16,7 @@ class trackMarker:
 
     def getMarker(self):
         cap = cv2.VideoCapture(1)
+        #cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         __, img = cap.read()
 
         markers = tracker.find_markers(img)
@@ -28,46 +29,48 @@ class trackMarker:
             cv2.line(img, marker.position, marker.minor_axis, self.WHITE, 2)
             cv2.circle(img, midpoint,2,self.RED,-1)
             midpointlist.append(list(midpoint))
-
-        # cv2.imshow('Main window', cv2.resize(img.copy(), (600,400)))
+        cv2.imshow('Main window', cv2.resize(img.copy(), (800,600)))
         return self.fourPoints(midpointlist)
 
     def fourPoints(self,midpointlist):
         distanceList = list()
+        try:
+            for p1 in midpointlist:
+                for p2 in midpointlist:
+                    if(p1!=p2):
+                        distance = self.getPointDistance(p1,p2)
+                        distanceList.append([int(distance),p1,p2])
 
-        for p1 in midpointlist:
-            for p2 in midpointlist:
-                if(p1!=p2):
-                    distance = self.getPointDistance(p1,p2)
-                    distanceList.append([int(distance),p1,p2])
+            distanceList.sort()
 
-        distanceList.sort()
+            pointList = list()
 
-        pointList = list()
+            pointList.append(distanceList[len(distanceList)-1][1])
+            pointList.append(distanceList[len(distanceList)-1][2])
+            pointList.append(distanceList[len(distanceList)-3][1])
+            pointList.append(distanceList[len(distanceList)-3][2])
 
-        pointList.append(distanceList[len(distanceList)-1][1])
-        pointList.append(distanceList[len(distanceList)-1][2])
-        pointList.append(distanceList[len(distanceList)-3][1])
-        pointList.append(distanceList[len(distanceList)-3][2])
+            outlist = list()
+            # add wight
+            for point in pointList:
+                out = [int(self.getPointDistance([0,0],point)), [point]]
+                outlist.append(out)
 
-        outlist = list()
-        # add wight
-        for point in pointList:
-            out = [int(self.getPointDistance([0,0],point)), [point]]
-            outlist.append(out)
+            outlist.sort()
 
-        outlist.sort()
+            p1 = outlist.pop(0)[1]
+            p4 = outlist.pop(len(outlist) - 1)[1]
+            if (outlist[0][1][0] < outlist[1][1][0]):
+                p2 = outlist.pop(1)[1]
+                p3 = outlist.pop(0)[1]
+            else:
+                p3 = outlist.pop(1)[1]
+                p2 = outlist.pop(0)[1]
 
-        p1 = outlist.pop(0)[1]
-        p4 = outlist.pop(len(outlist) - 1)[1]
-        if (outlist[0][1][0] < outlist[1][1][0]):
-            p2 = outlist.pop(1)[1]
-            p3 = outlist.pop(0)[1]
-        else:
-            p3 = outlist.pop(1)[1]
-            p2 = outlist.pop(0)[1]
-
-        return [p1,p2,p3,p4]
+            return [p1, p2, p3, p4]
+        except Exception:
+            pass
+    pass
 
 
 

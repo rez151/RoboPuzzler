@@ -45,7 +45,7 @@ class CameraManager:
         #thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
         thresh = cv2.threshold(gray2, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
         thresh = cv2.erode(thresh, None, iterations=9)
-        thresh = cv2.dilate(thresh, None, iterations=2)
+        thresh = cv2.dilate(thresh, None, iterations=0)
         cv2.imshow("give me the fucking trash", thresh)
         return thresh, img_input, gray
 

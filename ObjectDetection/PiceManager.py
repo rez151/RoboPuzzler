@@ -150,6 +150,6 @@ class PiceManager:
         #
         return self.extractPices(img_filtered, img_input, gray)
 
-    def getAllPicesbyFrame(self,img_filtered,img_input,cameraIndex):
+    def getAllPicesbyFrame(self, cameraIndex):
         img_filtered, img_input, gray = CameraManager.CameraManager().getCameraFrameInput(cameraIndex)
         return self.extractPices(img_filtered, img_input, gray)
