@@ -2,9 +2,11 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from keras import backend as K
+import tensorflow as tf
 import time as time
 
-from keras import backend as K
+
 import matplotlib.pyplot as plt
 
 from ObjectDetection.TensorBoardWrapper import TensorBoardWrapper
@@ -12,6 +14,14 @@ from ObjectDetection.TensorBoardWrapper import TensorBoardWrapper
 
 class TrainModel:
         def trainModel(self):
+
+        ## required for efficient GPU use
+                config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
+                session = tf.Session(config=config)
+                K.set_session(session)
+        ## required for efficient GPU use
+
+
         # Defines the network to use only tensorflow
                 K.set_image_dim_ordering('tf')
         # Ordnerstruktur
