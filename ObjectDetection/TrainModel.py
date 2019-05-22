@@ -39,7 +39,7 @@ class TrainModel:
                 model = Sequential()
         # Definition for the layout of the network
                 dense_layers = [1]
-                layer_sizes = [32, 32, 64]
+                layer_sizes = [32, 64, 128]
                 conv_layers = [3]
         # Coonv2D(number of filters(window_height, window_width), Activationfunction, input_shape)
         # MaxPooling2D(pool_size=(2, 2))
@@ -67,7 +67,7 @@ class TrainModel:
 
                                 model.add(Flatten())
                                 for _ in range(dense_layer):
-                                        model.add(Dense(64))
+                                        model.add(Dense(128))
                                         model.add(Activation('relu'))
 
                                 model.add(Dropout(0.5))
@@ -101,7 +101,7 @@ class TrainModel:
                         history = model.fit_generator(
                                 train_generator,
                                 #callbacks=callback_list,
-                                epochs=20,
+                                epochs=10,
                                 steps_per_epoch=6000/batch_size,
                                 validation_data=validation_generator,
                                 validation_steps=2466/batch_size,
