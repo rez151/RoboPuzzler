@@ -41,7 +41,7 @@ class PiceManager:
                 # draw rotation Circles
                 PiceManager().drawRotationCircle(image, midpoint, maxpoint, normedmaxpoint)
                 # print progress status
-                print(str(int((i * 100) / (cnts.__len__() - 2))) + "%")
+                print(str(int((i * 100) / (cnts.__len__() - 1))) + "%")
 
                 extractedPices.insert(i, [i, extractPiceClassification, midpoint, str(id), rotation])
         return extractedPices, image

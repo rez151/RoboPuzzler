@@ -14,8 +14,8 @@ class trackMarker:
     WHITE = (255, 255, 255)
 
 
-    def getMarker(self):
-        cap = cv2.VideoCapture(1)
+    def getMarker(self,cameraindex):
+        cap = cv2.VideoCapture(cameraindex)
         #cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         __, img = cap.read()
 
@@ -90,7 +90,7 @@ class trackMarker:
 if __name__ == '__main__':
     while True:
 
-        trackMarker().getMarker()
+        trackMarker().getMarker(1)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

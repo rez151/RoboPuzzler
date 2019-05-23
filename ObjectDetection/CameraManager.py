@@ -3,16 +3,16 @@ import numpy as np
 import ObjectDetection.trackMarker as tm
 
 class CameraManager:
-    thresh_filter = 240
+    thresh_filter = 140
 
 
     def getImageFile(self, path):
         image = cv2.imread(path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray2 = cv2.GaussianBlur(gray, (5, 5), 0)
+        gray2 = cv2.GaussianBlur(gray, (17, 17), 0)
         thresh = cv2.threshold(gray2, self.thresh_filter, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.erode(thresh, None, iterations=3)
-        thresh = cv2.dilate(thresh, None, iterations=0)
+        thresh = cv2.erode(thresh, None, iterations=0)
+        thresh = cv2.dilate(thresh, None, iterations=7)
         return thresh, image, gray
 
     def getImageFilebyID(self, id):
@@ -20,23 +20,25 @@ class CameraManager:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
         thresh = cv2.threshold(gray, 245, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.erode(thresh, None, iterations=2)
-        thresh = cv2.dilate(thresh, None, iterations=2)
+        thresh = cv2.erode(thresh, None, iterations=0)
+        thresh = cv2.dilate(thresh, None, iterations=0)
         return thresh, image
 
     def getCameraFrameInput(self,cameraIndex):
         cap = cv2.VideoCapture(cameraIndex)
         _, img_input = cap.read()
-
-        if(tm.trackMarker().getMarker().__sizeof__()>3):
-            image_width = int(2070 /2)
-            image_hight = int(1680 /2)
-            pts1 = np.float32((tm.trackMarker().getMarker()))
-            # pts1 = np.sort(pts1,0)
-            print(pts1)
-            pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
-            M = cv2.getPerspectiveTransform(pts1, pts2)
-            img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
+        try:
+            if(tm.trackMarker().getMarker(cameraIndex).__sizeof__()>3):
+                image_width = int(2070 /2)
+                image_hight = int(1680 /2)
+                pts1 = np.float32((tm.trackMarker().getMarker(cameraIndex)))
+                # pts1 = np.sort(pts1,0)
+                print(pts1)
+                pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
+                M = cv2.getPerspectiveTransform(pts1, pts2)
+                img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
+        except Exception as e:
+            print("Funktion getCameraFrameInput(): Not found 4 marker")
 
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
         gray2 = cv2.GaussianBlur(gray, (23, 23), 0)
@@ -63,7 +65,7 @@ class CameraManager:
 
 
 if __name__ == '__main__':
-    thresh, image, gray = CameraManager().getImageFile('TestImages/testwithallpicesnorotated.jpg')
+    thresh, image, gray = CameraManager().getImageFile('Images/test/Elefant/1.jpg')
 
     cv2.imshow("Thresh", thresh)
     # thresh, image, gray = CameraManager().getCameraFrameInput()

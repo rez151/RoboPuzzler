@@ -5,8 +5,8 @@ import ObjectDetection.PiceManager as pm
 class Main:
     def startDetection(self,path):
         print("Start")
-        extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
-        #extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
+        #extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
+        extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
         cv2.imshow("Input", img_input)
         file =open("output/cordinaten.txt","w")
         print("Output:")
@@ -20,4 +20,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection("TestImages/testwithallpicesrotated3.jpg")
+    Main().startDetection("TestImages/testwithallpicesnorotated.jpg")

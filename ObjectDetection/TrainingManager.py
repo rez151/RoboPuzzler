@@ -1,4 +1,8 @@
+import cv2
+import tensorflow as tf
+import numpy as np
 from keras.models import Sequential
+from keras.preprocessing.image import img_to_array
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
@@ -8,7 +12,7 @@ from keras.layers.core import Lambda
 
 
 from keras import backend as K
-import tensorflow as tf
+
 import time as time
 
 
@@ -105,7 +109,6 @@ class TrainModel:
                     target_size=(image_width, image_hight),
                     batch_size=batch_size,
                     class_mode='categorical')
-            print(validation_generator)
 
             try:
                     history = model.fit_generator(

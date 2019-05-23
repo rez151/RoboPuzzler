@@ -48,7 +48,7 @@ class Classifire:
                     model.add(Dense(6))
                     model.add(Activation('softmax'))
 
-        model.load_weights('model/first_try.h5')
+        model.load_weights('model/first_try_working.h5')
 
 
         prediction = model.predict(image)
