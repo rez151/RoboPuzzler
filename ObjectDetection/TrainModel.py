@@ -38,9 +38,9 @@ class TrainModel:
         # Sequential, prepare the model to a list of layers
                 model = Sequential()
         # Definition for the layout of the network
-                dense_layers = [1]
-                layer_sizes = [32, 64, 128]
-                conv_layers = [3]
+                dense_layers = [0]
+                layer_sizes = [32, 32, 64, 64]
+                conv_layers = [4]
         # Coonv2D(number of filters(window_height, window_width), Activationfunction, input_shape)
         # MaxPooling2D(pool_size=(2, 2))
         # loop for network layer
@@ -67,7 +67,7 @@ class TrainModel:
 
                                 model.add(Flatten())
                                 for _ in range(dense_layer):
-                                        model.add(Dense(128))
+                                        model.add(Dense())
                                         model.add(Activation('relu'))
 
                                 model.add(Dropout(0.5))
@@ -101,7 +101,7 @@ class TrainModel:
                         history = model.fit_generator(
                                 train_generator,
                                 #callbacks=callback_list,
-                                epochs=10,
+                                epochs=20,
                                 steps_per_epoch=6000/batch_size,
                                 validation_data=validation_generator,
                                 validation_steps=2466/batch_size,
@@ -124,7 +124,8 @@ class TrainModel:
                                         conv_layers[0],
                                         layer_sizes[0],
                                         layer_sizes[1],
-                                        layer_sizes[2]
+                                        layer_sizes[2],
+                                        layer_sizes[3]
                                 )
                         )
                         plt.figure()
@@ -137,7 +138,8 @@ class TrainModel:
                                         conv_layers[0],
                                         layer_sizes[0],
                                         layer_sizes[1],
-                                        layer_sizes[2]
+                                        layer_sizes[2],
+                                        layer_sizes[3]
                                 )
                         )
                         plt.show()
