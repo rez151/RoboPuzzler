@@ -10,9 +10,11 @@ class PiceManager:
     def extractPices(self, img_filtered, img_input, gray):
         extractedPices = []
         cnts = cv2.findContours(img_filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
+
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
             if (i == cnts.__len__()-1):
+                print(cnts.__len__())
                 print("Done  \n")
             else:
                 # get Extracted pice
@@ -43,6 +45,7 @@ class PiceManager:
                 # print progress status
                 print(str(int((i * 100) / (cnts.__len__() - 1))) + "%")
 
+                print(extractedPices)
                 extractedPices.insert(i, [i, extractPiceClassification, midpoint, str(id), rotation])
         return extractedPices, image
 

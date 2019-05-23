@@ -38,8 +38,8 @@ class TrainModel:
         # Sequential, prepare the model to a list of layers
                 model = Sequential()
         # Definition for the layout of the network
-                dense_layers = [0]
-                layer_sizes = [32, 32, 64, 64]
+                dense_layers = [1]
+                layer_sizes = [32, 32, 64, 128]
                 conv_layers = [4]
         # Coonv2D(number of filters(window_height, window_width), Activationfunction, input_shape)
         # MaxPooling2D(pool_size=(2, 2))
@@ -67,7 +67,7 @@ class TrainModel:
 
                                 model.add(Flatten())
                                 for _ in range(dense_layer):
-                                        model.add(Dense())
+                                        model.add(Dense(128))
                                         model.add(Activation('relu'))
 
                                 model.add(Dropout(0.5))
@@ -120,7 +120,7 @@ class TrainModel:
                         plt.title('Korrektklassifizierungsrate Training/Validierung')
                         plt.legend()
                         plt.savefig(
-                                'log_img/Klassifizierung_ConvLayers_{}_layersizes_{}_{}_{}.png'.format(
+                                'log_img/Klassifizierung_ConvLayers_{}_layersizes_{}_{}_{}_{}.png'.format(
                                         conv_layers[0],
                                         layer_sizes[0],
                                         layer_sizes[1],
@@ -134,7 +134,7 @@ class TrainModel:
                         plt.title('Wert der Verlustfunktion Training/Validierung')
                         plt.legend()
                         plt.savefig(
-                                'log_img//Verlustfunktion_ConvLayers_{}_layersizes_{}_{}_{}.png'.format(
+                                'log_img//Verlustfunktion_ConvLayers_{}_layersizes_{}_{}_{}_{}.png'.format(
                                         conv_layers[0],
                                         layer_sizes[0],
                                         layer_sizes[1],

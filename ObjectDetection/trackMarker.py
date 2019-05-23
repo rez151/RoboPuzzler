@@ -90,7 +90,7 @@ class trackMarker:
 if __name__ == '__main__':
     while True:
 
-        trackMarker().getMarker(1)
+        trackMarker().getMarker(0)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
