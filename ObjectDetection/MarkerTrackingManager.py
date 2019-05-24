@@ -61,8 +61,8 @@ class MarkerTrackingManager:
         # --- Capture the videocamera (this may also be a video or a picture)
         cap = cv2.VideoCapture(cameraindex)
         # -- Set the camera size as the one it was calibrated with
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1250)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 877)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
         # -- Font for the text in the image
         font = cv2.FONT_HERSHEY_PLAIN
@@ -71,6 +71,8 @@ class MarkerTrackingManager:
 
         # -- Read the camera frame
         ret, frame = cap.read()
+
+        frame = cv2.resize(frame,(1080,720))
 
         # -- Convert in gray scale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # -- remember, OpenCV stores color images in Blue, Green, Red

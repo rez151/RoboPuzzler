@@ -11,8 +11,8 @@ from ObjectDetection.CameraCalibration.CalibrationImages import CalibrationImage
 class CameraCalibration:
     def getCalibration(self,camera_index):
         #---------------------- SET THE PARAMETERS
-        frame_width = 1250
-        frame_height = 877
+        frame_width = 1080
+        frame_height = 720
 
         nRows = 9
         nCols = 6
@@ -21,7 +21,7 @@ class CameraCalibration:
         workingFolder   = "/Users/thekey/Desktop/PuzzleSolver/RoboPuzzler/ObjectDetection/CameraCalibration/calibrationimages"
         imageType       = 'jpg'
 
-        safefolder  = 'calibrationOutput'
+        safefolder  = 'CameraCalibration'
         #------------------------------------------
 
         self.makeCalibrationimages(frame_width,frame_height,camera_index)
@@ -128,9 +128,9 @@ class CameraCalibration:
 
 
             #--------- Save result
-            filename = safefolder + "/cameraMatrix.txt"
+            filename = "cameraMatrix.txt"
             np.savetxt(filename, mtx, delimiter=',')
-            filename = safefolder + "/cameraDistortion.txt"
+            filename = "cameraDistortion.txt"
             np.savetxt(filename, dist, delimiter=',')
 
             mean_error = 0

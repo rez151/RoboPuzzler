@@ -27,12 +27,12 @@ class CameraManager:
     def getCameraFrameInput(self,cameraIndex):
         cap = cv2.VideoCapture(cameraIndex)
         _, img_input = cap.read()
-        img_input=cv2.resize(img_input,(1250,877))
+        img_input=cv2.resize(img_input,(1080,720))
         try:
             corners = tm.MarkerTrackingManager().getMarkerPoints(1)[0]
             if(len(corners)==4):
-                image_width = int(1250)
-                image_hight = int(877)
+                image_width = int(1080)
+                image_hight = int(720)
                 pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)
