@@ -6,7 +6,7 @@ class Main:
     def startDetection(self,path):
         print("Start")
         #extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
-        extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
+        extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(0)
         cv2.imshow("Input", img_input)
         file =open("output/cordinaten.txt","w")
         print("Output:")
