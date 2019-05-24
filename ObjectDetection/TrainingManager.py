@@ -1,8 +1,5 @@
-import cv2
 import tensorflow as tf
-import numpy as np
 from keras.models import Sequential
-from keras.preprocessing.image import img_to_array
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator

@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
-import ObjectDetection.trackMarker as tm
+import ObjectDetection.MarkerTrackingManager as tm
 
 class CameraManager:
-    thresh_filter = 140
+    thresh_filter = 245
 
 
     def getImageFile(self, path):
@@ -27,18 +27,18 @@ class CameraManager:
     def getCameraFrameInput(self,cameraIndex):
         cap = cv2.VideoCapture(cameraIndex)
         _, img_input = cap.read()
+        img_input=cv2.resize(img_input,(1250,877))
         try:
-            if(tm.trackMarker().getMarker(cameraIndex).__sizeof__()>3):
-                image_width = int(2070 /2)
-                image_hight = int(1680 /2)
-                pts1 = np.float32((tm.trackMarker().getMarker(cameraIndex)))
-                # pts1 = np.sort(pts1,0)
-                print(pts1)
+            corners = tm.MarkerTrackingManager().getMarkerPoints(1)[0]
+            if(len(corners)==4):
+                image_width = int(1250)
+                image_hight = int(877)
+                pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)
                 img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
         except Exception as e:
-            print("Funktion getCameraFrameInput(): Not found 4 marker")
+            print(e)
 
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
         gray2 = cv2.GaussianBlur(gray, (23, 23), 0)
@@ -46,7 +46,7 @@ class CameraManager:
         # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
         #thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
         thresh = cv2.threshold(gray2, self.thresh_filter, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        thresh = cv2.erode(thresh, None, iterations=9)
+        thresh = cv2.erode(thresh, None, iterations=0)
         thresh = cv2.dilate(thresh, None, iterations=0)
         cv2.imshow("give me the fucking trash", thresh)
         return thresh, img_input, gray
@@ -65,9 +65,9 @@ class CameraManager:
 
 
 if __name__ == '__main__':
-    thresh, image, gray = CameraManager().getImageFile('Images/test/Elefant/1.jpg')
+    thresh, image, gray = CameraManager().getCameraFrameInput(1)
 
-    cv2.imshow("Thresh", thresh)
+    cv2.imshow("Thresh", image)
     # thresh, image, gray = CameraManager().getCameraFrameInput()
     # imageshow = image.copy()
     #
