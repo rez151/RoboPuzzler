@@ -24,7 +24,7 @@ class CameraCalibration:
         safefolder  = 'CameraCalibration'
         #------------------------------------------
 
-        self.makeCalibrationimages(frame_width,frame_height,camera_index)
+        #self.makeCalibrationimages(frame_width,frame_height,camera_index)
 
 
 

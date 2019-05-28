@@ -146,7 +146,7 @@ class PiceManager:
 
     # TODO x,y form Corner
     def getCorners(self, img):
-        pass
+        return cv2.cornerHarris(img, 2, 3, 0.04)
 
     def getAllPicesbyPath(self,path=None):
         img_filtered, img_input, gray= CameraManager.CameraManager().getImageFile(path)

@@ -3,25 +3,24 @@ import cv2
 import cv2.aruco as aruco
 import math
 
-class MarkerTrackingManager:
 
+class MarkerTrackingManager:
     # --- Define Tag
-    id_to_find = [72,73,74,75]
-    marker_size = 5  # - [cm]
+    id_to_find = [72, 73, 74, 75]
+    marker_size = 1.5  # - [cm]
 
     # Checks if a matrix is a valid rotation matrix.
-    def isRotationMatrix(self,R):
+    def isRotationMatrix(self, R):
         Rt = np.transpose(R)
         shouldBeIdentity = np.dot(Rt, R)
         I = np.identity(3, dtype=R.dtype)
         n = np.linalg.norm(I - shouldBeIdentity)
         return n < 1e-6
 
-
     # Calculates rotation matrix to euler angles
     # The result is the same as MATLAB except the order
     # of the euler angles ( x and z are swapped ).
-    def rotationMatrixToEulerAngles(self,R):
+    def rotationMatrixToEulerAngles(self, R):
         assert (self.isRotationMatrix(R))
 
         sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
@@ -39,8 +38,7 @@ class MarkerTrackingManager:
 
         return np.array([x, y, z])
 
-
-    def getMarkerPoints(self,cameraindex):
+    def getMarkerPoints(self, cameraindex):
         returnPoints = []
 
         # --- Get the camera calibration path
@@ -67,33 +65,29 @@ class MarkerTrackingManager:
         # -- Font for the text in the image
         font = cv2.FONT_HERSHEY_PLAIN
 
-
-
         # -- Read the camera frame
         ret, frame = cap.read()
 
-        frame = cv2.resize(frame,(1080,720))
+        frame = cv2.resize(frame, (1080, 720))
 
         # -- Convert in gray scale
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # -- remember, OpenCV stores color images in Blue, Green, Red
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # -- Find all the aruco markers in the image
         corners, ids, rejected = aruco.detectMarkers(image=gray, dictionary=aruco_dict, parameters=parameters,
                                                      cameraMatrix=camera_matrix, distCoeff=camera_distortion)
-        print(ids)
+
+        print(str(len(ids)) + " marker found.")
 
         for p in corners:
             for p1 in p:
-                returnPoints.append([int(p1[0][0]),int(p1[0][1])])
-
+                returnPoints.append([int(p1[0][0]), int(p1[0][1])])
 
         returnPoints = self.fourPoints(returnPoints)
 
-
         if ids is not None:
             for id in ids:
-                if (self.id_to_find.count(id)==1):
-
+                if (self.id_to_find.count(id) == 1):
                     # -- ret = [rvec, tvec, ?]
                     # -- array of rotation and position of each marker in camera frame
                     # -- rvec = [[rvec_1], [rvec_2], ...]    attitude of the marker respect to camera frame
@@ -104,36 +98,33 @@ class MarkerTrackingManager:
                     rvec, tvec = ret[0][0, 0, :], ret[1][0, 0, :]
 
                     # -- Draw the detected marker and put a reference frame over it
-                    aruco.drawDetectedMarkers(frame, corners,ids)
+                    aruco.drawDetectedMarkers(frame, corners, ids)
                     aruco.drawAxis(frame, camera_matrix, camera_distortion, rvec, tvec, 10)
-
-
-                cap.release()
 
         return returnPoints, frame
 
-    def fourPoints(self,midpointlist):
+    def fourPoints(self, midpointlist):
         distanceList = list()
         try:
             for p1 in midpointlist:
                 for p2 in midpointlist:
-                    if(p1!=p2):
-                        distance = self.getPointDistance(p1,p2)
-                        distanceList.append([int(distance),p1,p2])
+                    if (p1 != p2):
+                        distance = self.getPointDistance(p1, p2)
+                        distanceList.append([int(distance), p1, p2])
 
             distanceList.sort()
 
             pointList = list()
 
-            pointList.append(distanceList[len(distanceList)-1][1])
-            pointList.append(distanceList[len(distanceList)-1][2])
-            pointList.append(distanceList[len(distanceList)-3][1])
-            pointList.append(distanceList[len(distanceList)-3][2])
+            pointList.append(distanceList[len(distanceList) - 1][1])
+            pointList.append(distanceList[len(distanceList) - 1][2])
+            pointList.append(distanceList[len(distanceList) - 3][1])
+            pointList.append(distanceList[len(distanceList) - 3][2])
 
             outlist = []
             # add wight
             for point in pointList:
-                out = [int(self.getPointDistance([0,0],point)), [point]]
+                out = [int(self.getPointDistance([0, 0], point)), [point]]
                 outlist.append(out)
 
             outlist.sort()
@@ -150,41 +141,17 @@ class MarkerTrackingManager:
             return [p1[0], p2[0], p3[0], p4[0]]
         except Exception:
             pass
+
     pass
-
-
-
-
 
     def getPointDistance(self, p1, p2):
         return math.sqrt(math.pow((p2[1] - p1[1]), 2) + math.pow((p2[0] - p1[0]), 2))
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
-    corners, frame = MarkerTrackingManager().getMarkerPoints(1)
-    print(corners)
-    cv2.imshow('frame', frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    while True:
+        corners, frame = MarkerTrackingManager().getMarkerPoints(1)
+        print(corners)
+        cv2.imshow('frame', frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()

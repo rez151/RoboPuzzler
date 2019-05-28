@@ -33,7 +33,7 @@ class CalibrationImages:
         while True:
             ret, frame = cap.read()
 
-            cv2.imshow('camera', cv2.resize(frame,(640,480)))
+            cv2.imshow('camera', cv2.resize(frame,(1080,720)))
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):

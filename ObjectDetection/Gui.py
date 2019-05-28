@@ -1,7 +1,7 @@
 from tkinter import *
 import cv2
 from PIL import Image, ImageTk
-import ObjectDetection.trackMarker as tm
+import ObjectDetection.MarkerTrackingManager as tm
 import ObjectDetection.PiceManager as pm
 import numpy as np
 
@@ -48,17 +48,16 @@ lmain.pack()
 
 def show_extractThrashFrame(frame):
     try:
-        if (tm.trackMarker().getMarker().__sizeof__() > 3):
-            image_width = int(2070 / 2)
-            image_hight = int(1680 / 2)
-            pts1 = np.float32((tm.trackMarker().getMarker()))
-            # pts1 = np.sort(pts1,0)
-            print(pts1)
+        corners = tm.MarkerTrackingManager().getMarkerPoints(1)[0]
+        if (len(corners) == 4):
+            image_width = int(1080)
+            image_hight = int(720)
+            pts1 = np.float32(corners)
             pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
             M = cv2.getPerspectiveTransform(pts1, pts2)
             frame = cv2.warpPerspective(frame, M, (image_width, image_hight))
-
-    except: Exception
+    except Exception as e:
+        print(e)
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (17, 17), 0)
