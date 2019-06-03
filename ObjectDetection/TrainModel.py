@@ -97,10 +97,15 @@ class TrainModel:
                         batch_size=batch_size,
                         class_mode='categorical')
 
+                callback_list = [
+                        EarlyStopping(monitor='val_loss', patience=2),
+
+                ]
+
                 try:
                         history = model.fit_generator(
                                 train_generator,
-                                #callbacks=callback_list,
+                                callbacks=callback_list,
                                 epochs=20,
                                 steps_per_epoch=6000/batch_size,
                                 validation_data=validation_generator,
@@ -145,6 +150,8 @@ class TrainModel:
                         plt.show()
 
                         model.summary()
+
+                        model.save("model/model.h5")
 
                         model_json = model.to_json()
                         with open("model/model_architecture.json", "w") as json_file:
