@@ -1,8 +1,10 @@
 from keras.preprocessing.image import img_to_array
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense
-from keras import backend as K
+# from keras.models import Sequential
+# from keras.layers import Conv2D, MaxPooling2D
+# from keras.layers import Activation, Dropout, Flatten, Dense
+# from keras import backend as K
+
+from keras.models import model_from_json
 import numpy as np
 import cv2
 
@@ -13,9 +15,9 @@ class Classifire:
         image_width = 224
         image_hight = 224
 
-        dense_layers = [0]
-        layer_sizes = [32, 32, 64]
-        conv_layers = [3]
+        # dense_layers = [0]
+        # layer_sizes = [32, 32, 64]
+        # conv_layers = [3]
 
         image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
@@ -23,35 +25,41 @@ class Classifire:
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
 
-        K.set_image_dim_ordering('tf')
-        model = Sequential()
+        # load json and create model
+        json_file = open('"model/model_architecture.json"', 'r')
+        loaded_model_json = json_file.read()
+        json_file.close()
+        loaded_model = model_from_json(loaded_model_json)
 
-        for dense_layer in dense_layers:
-            for conv_layer in conv_layers:
-                    i = 0
-                    model.add(Conv2D(layer_sizes[0], (3, 3), input_shape=(image_width, image_hight, colerType)))
-                    model.add(Activation('relu'))
-                    model.add(MaxPooling2D(pool_size=(2, 2)))
+        # K.set_image_dim_ordering('tf')
+        # model = Sequential()
+        #
+        # for dense_layer in dense_layers:
+        #     for conv_layer in conv_layers:
+        #             i = 0
+        #             model.add(Conv2D(layer_sizes[0], (3, 3), input_shape=(image_width, image_hight, colerType)))
+        #             model.add(Activation('relu'))
+        #             model.add(MaxPooling2D(pool_size=(2, 2)))
+        #
+        #             for l in range(conv_layer - 1):
+        #                 model.add(Conv2D(layer_sizes[i+1], (3, 3)))
+        #                 model.add(Activation('relu'))
+        #                 model.add(MaxPooling2D(pool_size=(2, 2)))
+        #                 i+=1
+        #
+        #             model.add(Flatten())
+        #             for _ in range(dense_layer):
+        #                 model.add(Dense())
+        #                 model.add(Activation('relu'))
+        #
+        #             model.add(Dropout(0.5))
+        #             model.add(Dense(6))
+        #             model.add(Activation('softmax'))
 
-                    for l in range(conv_layer - 1):
-                        model.add(Conv2D(layer_sizes[i+1], (3, 3)))
-                        model.add(Activation('relu'))
-                        model.add(MaxPooling2D(pool_size=(2, 2)))
-                        i+=1
-
-                    model.add(Flatten())
-                    for _ in range(dense_layer):
-                        model.add(Dense())
-                        model.add(Activation('relu'))
-
-                    model.add(Dropout(0.5))
-                    model.add(Dense(6))
-                    model.add(Activation('softmax'))
-
-        model.load_weights('model/first_try_working.h5')
+        loaded_model.load_weights('model/model_weights.h5')
 
 
-        prediction = model.predict(image)
+        prediction = loaded_model.predict(image)
 
         id = prediction.argmax(1)[0]
         print("prediction in %: "+str(prediction[0][id]*100))
