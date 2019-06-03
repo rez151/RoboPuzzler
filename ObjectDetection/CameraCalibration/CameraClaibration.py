@@ -11,8 +11,8 @@ from ObjectDetection.CameraCalibration.CalibrationImages import CalibrationImage
 class CameraCalibration:
     def getCalibration(self,camera_index):
         #---------------------- SET THE PARAMETERS
-        frame_width = 1080
-        frame_height = 720
+        frame_width = 1920
+        frame_height = 1080
 
         nRows = 9
         nCols = 6
@@ -24,7 +24,7 @@ class CameraCalibration:
         safefolder  = 'CameraCalibration'
         #------------------------------------------
 
-        #self.makeCalibrationimages(frame_width,frame_height,camera_index)
+        self.makeCalibrationimages(frame_width,frame_height,camera_index)
 
 
 

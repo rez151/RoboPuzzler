@@ -2,10 +2,9 @@ from tkinter import *
 import cv2
 from PIL import Image, ImageTk
 import ObjectDetection.MarkerTrackingManager as tm
-import ObjectDetection.PiceManager as pm
 import numpy as np
 
-cameraIndex=1
+cameraIndex=0
 
 width, height = 800, 600
 cap = cv2.VideoCapture(cameraIndex)
@@ -48,7 +47,7 @@ lmain.pack()
 
 def show_extractThrashFrame(frame):
     try:
-        corners = tm.MarkerTrackingManager().getMarkerPoints(1)[0]
+        corners = tm.MarkerTrackingManager().getMarkerPoints(0)[0]
         if (len(corners) == 4):
             image_width = int(1080)
             image_hight = int(720)
@@ -58,13 +57,9 @@ def show_extractThrashFrame(frame):
             frame = cv2.warpPerspective(frame, M, (image_width, image_hight))
     except Exception as e:
         print(e)
-
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (17, 17), 0)
-    # gray = cv2.medianBlur(gray, 17)
-    # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
-    # thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
-    thresh = cv2.threshold(gray, scalethresh.get(), 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    thresh = cv2.threshold(gray, scalethresh.get(), 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
     thresh = cv2.erode(thresh, None, iterations=scaleerode.get())
     thresh = cv2.dilate(thresh, None, iterations=scaledilate.get())
     return thresh
@@ -80,9 +75,6 @@ def show_thresh(frame):
 def show_resultImage(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (17, 17), 0)
-    # gray = cv2.medianBlur(gray, 17)
-    # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 4)
-    # thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_TRUNC)[1]
     thresh = cv2.threshold(gray,scalethresh.get(), 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
     thresh = cv2.erode(thresh, None, iterations=scaleerode.get())
     thresh = cv2.dilate(thresh, None, iterations=scaledilate.get())
@@ -104,11 +96,9 @@ def show_frame():
     _, frame = cap.read()
     frame = cv2.flip(frame, 1)
 
-
     # thresh = show_thresh(frame)
     thresh = show_extractThrashFrame(frame)
     # thresh = show_resultImage(frame)
-
 
     img = Image.fromarray(thresh)
     imgtk = ImageTk.PhotoImage(image=img)

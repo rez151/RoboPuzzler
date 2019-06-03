@@ -13,8 +13,8 @@ class PiceManager:
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
-            if (i == cnts.__len__()-1):
-                print(cnts.__len__())
+            if (i == len(cnts)-1):
+                print(len(cnts))
                 print("Done  \n")
             else:
                 # get Extracted pice
@@ -22,40 +22,21 @@ class PiceManager:
                 extractPiceClassification  = self.getExtractPice(gray, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
-                classifierID,id =  Classifier.Classifire().Classifier(extractPiceClassification)
+                classifierID, id =  Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
-
-
-                # draw line from normedpoint and local maxpoint to midpoint
-                cv2.line(image,midpoint,normedmaxpoint,(255,0,0),1)
-                cv2.line(image,midpoint,maxpoint,(0,255,0),1)
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
-                # draw Contours
-                cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
-                # draw Midpoint
-                cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
-                # draw MaxPoint
-                cv2.circle(image, maxpoint, 7, (0, 255, 0), -1)
-                # draw Classification text
-                cv2.putText(image, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255),2)
-                # draw rotation Circles
-                PiceManager().drawRotationCircle(image, midpoint, maxpoint, normedmaxpoint)
+                extractedPices.insert(i, [extractPiceClassification, midpoint, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
                 # print progress status
-                print(str(int((i * 100) / (cnts.__len__() - 1))) + "%")
-
-                print(extractedPices)
-                extractedPices.insert(i, [i, extractPiceClassification, midpoint, str(id), rotation])
+                print(str(int((i * 100) / (len(cnts) - 1))) + "%")
+        image = self.drawInformations(extractedPices)
         return extractedPices, image
-
-
 
     def getExtractPice(self, img_filtered, ctr):
         x, y, w, h = cv2.boundingRect(ctr)
         extractPice = img_filtered[y:y + h, x:x + w]
         return extractPice
-
 
     def getContour(self, img):
         cnts = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
@@ -68,7 +49,7 @@ class PiceManager:
                 return ctr
 
     def getOrientationPoint(self, id):
-        img_filtered, img_input = CameraManager.CameraManager().getImageFilebyID(id)
+        img_filtered = CameraManager.CameraManager().getImageFilebyID(id)
         normedPiceContour = self.getContour(img_filtered)
         # normedPice = self.getExtractPice(img_filtered, normedPiceContour)
         mx, my = self.getMidpoint(normedPiceContour)
@@ -129,6 +110,13 @@ class PiceManager:
         y2 = ((x1 - x0) * math.sin(a)) + ((y1 - y0) * math.cos(a)) + y0;
         return x2, y2
 
+    # def editForTensorflow(self, img):
+    #     img_as_string = cv2.imencode('.jpg', img)[1].tostring()
+    #     return img_as_string
+
+    def getCorners(self, img):
+        return cv2.cornerHarris(img, 2, 3, 0.04)
+
     def drawRotationCircle(self, img, midpoint, maxpoint, normedmaxpoint):
         # Detected Pice
         radius = self.getPointDistance(midpoint, maxpoint)
@@ -140,17 +128,26 @@ class PiceManager:
         cv2.circle(img, midpoint, int(radius), (255, 0, 0))
         pass
 
-    # def editForTensorflow(self, img):
-    #     img_as_string = cv2.imencode('.jpg', img)[1].tostring()
-    #     return img_as_string
+    def drawInformations(self, image, extractedPices):
+        for pices in extractedPices:
+            extractPiceClassification, midpoint, maxpoint, id, classifierID, normedmaxpoint, rotation, ctr = pices
+            # draw line from normedpoint and local maxpoint to midpoint
+            cv2.line(image, midpoint, normedmaxpoint, (255, 0, 0), 1)
+            cv2.line(image, midpoint, maxpoint, (0, 255, 0), 1)
+            # draw Contours
+            cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
+            # draw Midpoint
+            cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
+            # draw MaxPoint
+            cv2.circle(image, maxpoint, 7, (0, 255, 0), -1)
+            # draw Classification text
+            cv2.putText(image, (str(classifierID)), midpoint, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 2)
+            # draw rotation Circles
+            self.drawRotationCircle(image, midpoint, maxpoint, normedmaxpoint)
+        return image
 
-    # TODO x,y form Corner
-    def getCorners(self, img):
-        return cv2.cornerHarris(img, 2, 3, 0.04)
-
-    def getAllPicesbyPath(self,path=None):
-        img_filtered, img_input, gray= CameraManager.CameraManager().getImageFile(path)
-        #
+    def getAllPicesbyPath(self, path=None):
+        img_filtered, img_input, gray= CameraManager.CameraManager().getImagebyFile(path)
         return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self, cameraIndex):

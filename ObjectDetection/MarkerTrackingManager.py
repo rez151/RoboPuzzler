@@ -6,7 +6,7 @@ import math
 
 class MarkerTrackingManager:
     # --- Define Tag
-    id_to_find = [72, 73, 74, 75]
+    id_to_find = [72]#, 73, 74, 75]
     marker_size = 1.5  # - [cm]
 
     # Checks if a matrix is a valid rotation matrix.
@@ -59,8 +59,8 @@ class MarkerTrackingManager:
         # --- Capture the videocamera (this may also be a video or a picture)
         cap = cv2.VideoCapture(cameraindex)
         # -- Set the camera size as the one it was calibrated with
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
         # -- Font for the text in the image
         font = cv2.FONT_HERSHEY_PLAIN
@@ -68,7 +68,7 @@ class MarkerTrackingManager:
         # -- Read the camera frame
         ret, frame = cap.read()
 
-        frame = cv2.resize(frame, (1080, 720))
+        frame = cv2.resize(frame, (1920, 1080))
 
         # -- Convert in gray scale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -77,7 +77,7 @@ class MarkerTrackingManager:
         corners, ids, rejected = aruco.detectMarkers(image=gray, dictionary=aruco_dict, parameters=parameters,
                                                      cameraMatrix=camera_matrix, distCoeff=camera_distortion)
 
-        print(str(len(ids)) + " marker found.")
+        #print(str(len(ids)) + " marker found.")
 
         for p in corners:
             for p1 in p:
@@ -150,8 +150,9 @@ class MarkerTrackingManager:
 
 if __name__ == '__main__':
     while True:
-        corners, frame = MarkerTrackingManager().getMarkerPoints(1)
+        corners, frame = MarkerTrackingManager().getMarkerPoints(0)
         print(corners)
-        cv2.imshow('frame', frame)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        cv2.imshow('frame', cv2.resize(frame, (1080, 720)))
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

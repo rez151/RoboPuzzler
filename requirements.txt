@@ -1,5 +1,5 @@
 tensorflow
-opencv-python
+opencv-contrib-python
 numpy
 imutils
 keras
