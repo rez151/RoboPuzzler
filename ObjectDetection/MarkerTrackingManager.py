@@ -149,10 +149,9 @@ class MarkerTrackingManager:
 
 
 if __name__ == '__main__':
-    while True:
-        corners, frame = MarkerTrackingManager().getMarkerPoints(0)
-        print(corners)
-        cv2.imshow('frame', cv2.resize(frame, (1080, 720)))
+    corners, frame = MarkerTrackingManager().getMarkerPoints(1)
+    print(corners)
+    cv2.imshow('frame', cv2.resize(frame, (1080, 720)))
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()

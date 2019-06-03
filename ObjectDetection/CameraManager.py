@@ -1,4 +1,5 @@
 import cv2
+
 import numpy as np
 import ObjectDetection.MarkerTrackingManager as tm
 
@@ -17,7 +18,6 @@ class CameraManager:
 
     def getCameraFrameInput(self, cameraindex):
         cap = cv2.VideoCapture(cameraindex)
-        print("bild gemacht")
         _, img_input = cap.read()
         img_input = self.arucoMarkerCut(img_input, cameraindex)
         thresh, gray = self.imageFilter(img_input)
@@ -58,27 +58,32 @@ class CameraManager:
             mY = int(M["m01"] / M["m00"])
             return mX, mY
 
+    def getExtractPice(self, img_filtered, ctr):
+        x, y, w, h = cv2.boundingRect(ctr)
+        extractPice = img_filtered[y:y + h, x:x + w]
+        return extractPice
 
 if __name__ == '__main__':
-    thresh, image, gray = CameraManager().getCameraFrameInput(0)
-    # thresh= cv2.resize(thresh, (2268, 1535))
-    # image= cv2.resize(image, (2268, 1535))
-    cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
+    thresh, image, gray = CameraManager().getCameraFrameInput(1)
+    thresh= cv2.resize(thresh, (1014, 734))
+    image= cv2.resize(image, (1014, 734))
+    cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
 
     try:
         for i, ctr in enumerate(cnts):
-            if (i == (len(cnts) - 1)):
-                print(len(cnts))
+            if (i == (len(cnts)-1)):
                 print("Done  \n")
             else:
-                # get Extracted pice
+                extractPice = CameraManager().getExtractPice(image, ctr)
+                cv2.imwrite("Images/test/" + str(i) + ".jpg", cv2.resize(extractPice, (224, 224)))
                 midpoint = CameraManager().getMidpoint(ctr)
                 cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
                 cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
-                print(str(midpoint[0]/60) + ", " + str(midpoint[1]/60))
+                print(str(midpoint[0]) + ", " + str(midpoint[1]))
+                print(str((midpoint[0]*2.54)/72) + ", " + str((midpoint[1]*2.54)/72))
     except Exception as e:
         print(e)
 
-    cv2.imshow("Thresh", cv2.resize(image, (1080, 720)))
+    cv2.imshow("Thresh", cv2.resize(image, (1015, 734)))
     cv2.waitKey(0)
     cv2.destroyAllWindows()

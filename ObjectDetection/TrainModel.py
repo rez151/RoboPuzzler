@@ -153,13 +153,13 @@ class TrainModel:
 
                         model.save("model/model.h5")
 
-                        model_json = model.to_json()
-                        with open("model/model_architecture.json", "w") as json_file:
-                                json_file.write(model_json)
-                        model.save_weights('model/model_weights.h5')
+                        # model_json = model.to_json()
+                        # with open("model/model_architecture.json", "w") as json_file:
+                        #         json_file.write(model_json)
+                       # model.save_weights('model/model_weights.h5')
 
                 except KeyboardInterrupt:
-                        model.save_weights('model/model_weights.h5.h5')
+                        model.save("model/model.h5")
 
 if __name__ == '__main__':
  TrainModel().trainModel()

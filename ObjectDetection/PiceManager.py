@@ -22,12 +22,13 @@ class PiceManager:
                 extractPiceClassification  = self.getExtractPice(gray, ctr)
                 midpoint = self.getMidpoint(ctr)
                 maxpoint = self.getPointMaxDistance(midpoint, ctr)
+                maxpointCm = self.midPointToCm(midpoint)
                 classifierID, id =  Classifier.Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.normedMaxPosition(midpoint, classifierID)
                 rotation = self.getRotation(midpoint, maxpoint, normedmaxpoint)
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
-                extractedPices.insert(i, [extractPiceClassification, midpoint, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
+                extractedPices.insert(i, [extractPiceClassification, maxpointCm, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
                 # print progress status
                 print(str(int((i * 100) / (len(cnts) - 1))) + "%")
         image = self.drawInformations(extractedPices)
@@ -47,6 +48,12 @@ class PiceManager:
                 pass
             else:
                 return ctr
+
+    def midPointToCm(self, midpoint):
+        x = (midpoint[0] * 2.54) / 72
+        y = (midpoint[1] * 2.54) / 72
+        return x, y
+
 
     def getOrientationPoint(self, id):
         img_filtered = CameraManager.CameraManager().getImageFilebyID(id)
