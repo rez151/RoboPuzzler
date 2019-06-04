@@ -98,9 +98,21 @@ class TrainModel:
                         class_mode='categorical')
 
                 callback_list = [
-                        EarlyStopping(monitor='val_loss', patience=2),
-
-                ]
+                                 EarlyStopping(
+                                         monitor='acc',
+                                         patience=2,
+                                 ),
+                                 ModelCheckpoint(
+                                         filepath='model/first_try.h5',
+                                         monitor='val_loss',
+                                         save_best_only=True
+                                 ),
+                                 ReduceLROnPlateau(
+                                         monitor='val_loss',
+                                         factor=0.1,
+                                         patience=3
+                                 )
+                        ]
 
                 try:
                         history = model.fit_generator(
