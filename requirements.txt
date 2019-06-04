@@ -1,3 +1,4 @@
+scipy
 tensorflow
 opencv-contrib-python
 numpy

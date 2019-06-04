@@ -99,8 +99,9 @@ if __name__ == '__main__':
             if i == (len(cnts) - 1):
                 print("Done  \n")
             else:
-                extractPice = PiceManager.PiceManager().getExtractPice(image, ctr)
-                midpoint = MathManager.MathManager.getMidpoint(ctr)
+                extractPice = PiceManager.PiceManager().getExtractPice(thresh, ctr)
+                cv2.imwrite("Images/" + str(i) + ".jpg", extractPice)
+                midpoint = MathManager.MathManager.getPiceMidpoint(ctr)
                 midpointCm = MathManager.MathManager().midPointToCm(ctr)
                 #cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
                 #cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
@@ -109,6 +110,6 @@ if __name__ == '__main__':
         print(e)
 
     cv2.imshow("Thresh", cv2.resize(image, (1015, 734)))
-    cv2.imwrite("Images/test2.jpg", cv2.resize(image, (1015, 734)))
+
     cv2.waitKey(0)
     cv2.destroyAllWindows()

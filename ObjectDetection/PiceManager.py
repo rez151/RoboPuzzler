@@ -13,23 +13,27 @@ class PiceManager:
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
+            if cv2.contourArea(ctr) < 100:
+                continue
+
             if i == len(cnts) - 1:
                 print(len(cnts))
                 print("Done  \n")
             else:
                 # get Extracted pice
                 extractPiceClassification = self.getExtractPice(gray, ctr)
-                midpoint = MathManager.getMidpoint(ctr)
-                print(midpoint)
-                midpointcm = MathManager().midPointToCm(midpoint)
-                print(midpointcm)
+                midpoint = MathManager.getPiceMidpoint(ctr)
+                midpointcm = MathManager.midPointToCm(midpoint)
                 maxpoint = MathManager().getPointMaxDistance(midpoint, ctr)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.getNormedMaxPoint(midpoint, classifierID)
                 rotation = MathManager.getRotation(midpoint, maxpoint, normedmaxpoint)
+                dimension = MathManager().getPiceMeasurement(ctr)
+                cv2.circle(image, dimension, 7, (0, 255, 0), -1)
+                print(dimension)
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
-                extractedPices.insert(i, [extractPiceClassification, midpoint, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
+                extractedPices.insert(i, [extractPiceClassification, midpoint, midpointcm, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
                 # print progress status
                 print(str(int((i * 100) / (len(cnts) - 1))) + "%")
         image = self.drawInformations(image, extractedPices)
@@ -75,14 +79,14 @@ class PiceManager:
     @staticmethod
     def drawInformations(image, extractedPices):
         for pices in extractedPices:
-            extractPiceClassification, midpoint, maxpoint, id, classifierID, normedmaxpoint, rotation, ctr = pices
+            _, midpoint, _, maxpoint, _, classifierID, normedmaxpoint, _, ctr = pices
             # draw line from normedpoint and local maxpoint to midpoint
             cv2.line(image, midpoint, normedmaxpoint, (255, 0, 0), 1)
             cv2.line(image, midpoint, maxpoint, (0, 255, 0), 1)
             # draw Contours
             cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
             # draw Midpoint
-            cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
+            #   cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
             # draw MaxPoint
             cv2.circle(image, maxpoint, 7, (0, 255, 0), -1)
             # draw Classification text
@@ -98,3 +102,4 @@ class PiceManager:
     def getAllPicesbyFrame(self, cameraIndex):
         img_thresh, img_input, gray = CameraManager().getAreaOfInterest(cameraindex=cameraIndex)
         return self.extractPices(img_thresh, img_input, gray)
+
