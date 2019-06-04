@@ -16,7 +16,7 @@ class CameraManager:
     def getImageFilebyID(self, id):
         img_input = cv2.imread("Rotation/" + str(id) + ".jpg")
         thresh = self.imageFilter(img_input)[0]
-        cv2.resize(thresh, (1014, 734))
+        # cv2.resize(thresh, (1032, 711))
         return thresh
 
     @staticmethod
@@ -40,8 +40,9 @@ class CameraManager:
         img_input = self.getUndistortImg(img_input)
         img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
-        cv2.resize(thresh, (1014, 734))
-        cv2.resize(gray, (1014, 734))
+        cv2.resize(thresh, (1032, 711))
+        cv2.resize(gray, (1032, 711))
+        cv2.resize(img_input, (1032, 711))
         return thresh, img_input, gray
 
     @staticmethod
@@ -50,8 +51,8 @@ class CameraManager:
             img = cv2.resize(img, (1920, 1080))
             corners = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)[0]
             if len(corners) == 4:
-                image_width = int(1920)
-                image_hight = int(1080)
+                image_width = int(1032)
+                image_hight = int(711)
                 pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)

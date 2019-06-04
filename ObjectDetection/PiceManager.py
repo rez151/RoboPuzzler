@@ -9,6 +9,7 @@ class PiceManager:
     def extractPices(self, img_thresh, img_input, gray):
         extractedPices = []
         cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
+        cv2.imshow("penis",img_thresh)
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
@@ -19,6 +20,9 @@ class PiceManager:
                 # get Extracted pice
                 extractPiceClassification = self.getExtractPice(gray, ctr)
                 midpoint = MathManager.getMidpoint(ctr)
+                print(midpoint)
+                midpointcm = MathManager().midPointToCm(midpoint)
+                print(midpointcm)
                 maxpoint = MathManager().getPointMaxDistance(midpoint, ctr)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.getNormedMaxPoint(midpoint, classifierID)
@@ -92,5 +96,5 @@ class PiceManager:
         return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self, cameraIndex):
-        img_filtered, img_input, gray = CameraManager().getAreaOfInterest(cameraindex=cameraIndex)
-        return self.extractPices(img_filtered, img_input, gray)
+        img_thresh, img_input, gray = CameraManager().getAreaOfInterest(cameraindex=cameraIndex)
+        return self.extractPices(img_thresh, img_input, gray)
