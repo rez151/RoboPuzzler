@@ -6,11 +6,12 @@ import math
 
 class MarkerTrackingManager:
     # --- Define Tag
-    id_to_find = [72]#, 73, 74, 75]
-    marker_size = 1.5  # - [cm]
+    id_to_find = [72]
+    marker_size = 1.5  # [cm]
 
     # Checks if a matrix is a valid rotation matrix.
-    def isRotationMatrix(self, R):
+    @staticmethod
+    def isRotationMatrix(R):
         Rt = np.transpose(R)
         shouldBeIdentity = np.dot(Rt, R)
         I = np.identity(3, dtype=R.dtype)
@@ -22,11 +23,8 @@ class MarkerTrackingManager:
     # of the euler angles ( x and z are swapped ).
     def rotationMatrixToEulerAngles(self, R):
         assert (self.isRotationMatrix(R))
-
         sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
-
         singular = sy < 1e-6
-
         if not singular:
             x = math.atan2(R[2, 1], R[2, 2])
             y = math.atan2(-R[2, 0], sy)
@@ -35,10 +33,9 @@ class MarkerTrackingManager:
             x = math.atan2(-R[1, 2], R[1, 1])
             y = math.atan2(-R[2, 0], sy)
             z = 0
-
         return np.array([x, y, z])
 
-    def getMarkerPoints(self, cameraindex):
+    def getMarkerPoints(self, img_input):
         returnPoints = []
 
         # --- Get the camera calibration path
@@ -56,28 +53,19 @@ class MarkerTrackingManager:
         aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_ARUCO_ORIGINAL)
         parameters = aruco.DetectorParameters_create()
 
-        # --- Capture the videocamera (this may also be a video or a picture)
-        cap = cv2.VideoCapture(cameraindex)
-        # -- Set the camera size as the one it was calibrated with
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-
         # -- Font for the text in the image
         font = cv2.FONT_HERSHEY_PLAIN
 
-        # -- Read the camera frame
-        ret, frame = cap.read()
-
-        frame = cv2.resize(frame, (1920, 1080))
+        img_input = cv2.resize(img_input, (1920, 1080))
 
         # -- Convert in gray scale
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
 
         # -- Find all the aruco markers in the image
         corners, ids, rejected = aruco.detectMarkers(image=gray, dictionary=aruco_dict, parameters=parameters,
                                                      cameraMatrix=camera_matrix, distCoeff=camera_distortion)
 
-        #print(str(len(ids)) + " marker found.")
+        # print(str(len(ids)) + " marker found.")
 
         for p in corners:
             for p1 in p:
@@ -87,7 +75,7 @@ class MarkerTrackingManager:
 
         if ids is not None:
             for id in ids:
-                if (self.id_to_find.count(id) == 1):
+                if self.id_to_find.count(id) == 1:
                     # -- ret = [rvec, tvec, ?]
                     # -- array of rotation and position of each marker in camera frame
                     # -- rvec = [[rvec_1], [rvec_2], ...]    attitude of the marker respect to camera frame

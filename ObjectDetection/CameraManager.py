@@ -1,7 +1,9 @@
 import cv2
-
 import numpy as np
-import ObjectDetection.MarkerTrackingManager as tm
+from ObjectDetection.MarkerTrackingManager import MarkerTrackingManager
+from ObjectDetection.PiceManager import PiceManager
+from ObjectDetection.MathManager import MathManager
+
 
 class CameraManager:
     thresh_filter = 245
@@ -12,24 +14,32 @@ class CameraManager:
         return thresh, img_input, gray
 
     def getImageFilebyID(self, id):
-        img_input = cv2.imread("Rotation/"+id+".jpg")
+        img_input = cv2.imread("Rotation/" + id + ".jpg")
         thresh = self.imageFilter(img_input)[0]
         return thresh
 
-    def getCameraFrameInput(self, cameraindex):
+    @staticmethod
+    def getCameraFrameInput(cameraindex):
         cap = cv2.VideoCapture(cameraindex)
-        _, img_input = cap.read()
-        img_input = self.arucoMarkerCut(img_input, cameraindex)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        ret, img_input = cap.read()
+        return ret, img_input
+
+    def getAreaOfInterest(self, cameraindex):
+        _, img_input = self.getCameraFrameInput(cameraindex)
+        img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
-        #optional output
-        cv2.imshow("give me the fucking trash", thresh)
+        cv2.resize(thresh, (1014, 734))
+        cv2.resize(gray, (1014, 734))
         return thresh, img_input, gray
 
-    def arucoMarkerCut(self, img, cameraindex):
+    @staticmethod
+    def arucoMarkerCut(img):
         try:
             img = cv2.resize(img, (1920, 1080))
-            corners = tm.MarkerTrackingManager().getMarkerPoints(cameraindex)[0]
-            if (len(corners) == 4):
+            corners = MarkerTrackingManager().getMarkerPoints(img)[0]
+            if len(corners) == 4:
                 image_width = int(1920)
                 image_hight = int(1080)
                 pts1 = np.float32(corners)
@@ -48,39 +58,44 @@ class CameraManager:
         thresh = cv2.dilate(thresh, None, iterations=0)
         return thresh, gray
 
-    def setThresh_filter(self,value):
+    def setThresh_filter(self, value):
         self.thresh_filter = value
 
-    def getMidpoint(self, ctr):
-        M = cv2.moments(ctr)
-        if M["m10"] > 0:
-            mX = int(M["m10"] / M["m00"])
-            mY = int(M["m01"] / M["m00"])
-            return mX, mY
+    def saveExtractImages(self):
+        thresh, image, gray = self.getAreaOfInterest(1)
+        cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
+        try:
+            for i, ctr in enumerate(cnts):
+                if i == (len(cnts) - 1):
+                    print("Done  \n")
+                else:
+                    extractPice = PiceManager().getExtractPice(image, ctr)
+                    path = "Images/test/" + str(i) + ".jpg"
+                    cv2.imwrite(path, cv2.resize(extractPice, (224, 224)))
+                    print("Saved " + str(i) + "picture to "+path)
+            print("Saved all extract pictures")
+        except Exception as e:
+            print(e)
 
-    def getExtractPice(self, img_filtered, ctr):
-        x, y, w, h = cv2.boundingRect(ctr)
-        extractPice = img_filtered[y:y + h, x:x + w]
-        return extractPice
+
+
 
 if __name__ == '__main__':
-    thresh, image, gray = CameraManager().getCameraFrameInput(1)
-    thresh= cv2.resize(thresh, (1014, 734))
-    image= cv2.resize(image, (1014, 734))
+    thresh, image, gray = CameraManager().getAreaOfInterest(1)
     cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
 
     try:
         for i, ctr in enumerate(cnts):
-            if (i == (len(cnts)-1)):
+            if i == (len(cnts) - 1):
                 print("Done  \n")
             else:
-                extractPice = CameraManager().getExtractPice(image, ctr)
+                extractPice = PiceManager().getExtractPice(image, ctr)
                 cv2.imwrite("Images/test/" + str(i) + ".jpg", cv2.resize(extractPice, (224, 224)))
-                midpoint = CameraManager().getMidpoint(ctr)
+                midpoint = MathManager.getMidpoint(ctr)
                 cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
                 cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
                 print(str(midpoint[0]) + ", " + str(midpoint[1]))
-                print(str((midpoint[0]*2.54)/72) + ", " + str((midpoint[1]*2.54)/72))
+                print(str((midpoint[0] * 2.54) / 72) + ", " + str((midpoint[1] * 2.54) / 72))
     except Exception as e:
         print(e)
 
