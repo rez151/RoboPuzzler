@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-from ObjectDetection.MarkerTrackingManager import MarkerTrackingManager
-from ObjectDetection.PiceManager import PiceManager
-from ObjectDetection.MathManager import MathManager
+import ObjectDetection.MarkerTrackingManager as MarkerTrackingManager
+import ObjectDetection.PiceManager as PiceManager
+import ObjectDetection.MathManager as MathManager
 
 
 class CameraManager:
@@ -14,8 +14,9 @@ class CameraManager:
         return thresh, img_input, gray
 
     def getImageFilebyID(self, id):
-        img_input = cv2.imread("Rotation/" + id + ".jpg")
+        img_input = cv2.imread("Rotation/" + str(id) + ".jpg")
         thresh = self.imageFilter(img_input)[0]
+        cv2.resize(thresh, (1014, 734))
         return thresh
 
     @staticmethod
@@ -24,10 +25,19 @@ class CameraManager:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         ret, img_input = cap.read()
-        return ret, img_input
+        return img_input
+
+    @staticmethod
+    def getUndistortImg(img):
+        calib_path = "CameraCalibration"
+        camera_matrix = np.loadtxt(calib_path + '/cameraMatrix.txt', delimiter=',')
+        camera_distortion = np.loadtxt(calib_path + '/cameraDistortion.txt', delimiter=',')
+        img_undistorted = cv2.undistort(img, camera_matrix, camera_distortion)
+        return img_undistorted
 
     def getAreaOfInterest(self, cameraindex):
-        _, img_input = self.getCameraFrameInput(cameraindex)
+        img_input = self.getCameraFrameInput(cameraindex)
+        img_input = self.getUndistortImg(img_input)
         img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
         cv2.resize(thresh, (1014, 734))
@@ -38,7 +48,7 @@ class CameraManager:
     def arucoMarkerCut(img):
         try:
             img = cv2.resize(img, (1920, 1080))
-            corners = MarkerTrackingManager().getMarkerPoints(img)[0]
+            corners = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)[0]
             if len(corners) == 4:
                 image_width = int(1920)
                 image_hight = int(1080)
@@ -47,7 +57,7 @@ class CameraManager:
                 M = cv2.getPerspectiveTransform(pts1, pts2)
                 img = cv2.warpPerspective(img, M, (image_width, image_hight))
         except Exception as e:
-            print(e)
+            print("Error: arucoMarkerCut, " + str(e))
         return img
 
     def imageFilter(self, img):
@@ -69,14 +79,13 @@ class CameraManager:
                 if i == (len(cnts) - 1):
                     print("Done  \n")
                 else:
-                    extractPice = PiceManager().getExtractPice(image, ctr)
+                    extractPice = PiceManager.PiceManager().getExtractPice(image, ctr)
                     path = "Images/test/" + str(i) + ".jpg"
                     cv2.imwrite(path, cv2.resize(extractPice, (224, 224)))
                     print("Saved " + str(i) + "picture to "+path)
             print("Saved all extract pictures")
         except Exception as e:
-            print(e)
-
+            print("Error: "+ e)
 
 
 
@@ -89,16 +98,16 @@ if __name__ == '__main__':
             if i == (len(cnts) - 1):
                 print("Done  \n")
             else:
-                extractPice = PiceManager().getExtractPice(image, ctr)
-                cv2.imwrite("Images/test/" + str(i) + ".jpg", cv2.resize(extractPice, (224, 224)))
-                midpoint = MathManager.getMidpoint(ctr)
-                cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
-                cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
-                print(str(midpoint[0]) + ", " + str(midpoint[1]))
-                print(str((midpoint[0] * 2.54) / 72) + ", " + str((midpoint[1] * 2.54) / 72))
+                extractPice = PiceManager.PiceManager().getExtractPice(image, ctr)
+                midpoint = MathManager.MathManager.getMidpoint(ctr)
+                midpointCm = MathManager.MathManager().midPointToCm(ctr)
+                #cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
+                #cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
+                print(str(midpointCm[0]) + ", " + str(midpointCm[1]))
     except Exception as e:
         print(e)
 
     cv2.imshow("Thresh", cv2.resize(image, (1015, 734)))
+    cv2.imwrite("Images/test2.jpg", cv2.resize(image, (1015, 734)))
     cv2.waitKey(0)
     cv2.destroyAllWindows()

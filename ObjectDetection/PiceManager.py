@@ -8,7 +8,7 @@ from ObjectDetection.MathManager import MathManager
 class PiceManager:
     def extractPices(self, img_thresh, img_input, gray):
         extractedPices = []
-        cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[1]
+        cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
@@ -21,14 +21,14 @@ class PiceManager:
                 midpoint = MathManager.getMidpoint(ctr)
                 maxpoint = MathManager().getPointMaxDistance(midpoint, ctr)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
-                normedmaxpoint = MathManager().normedMaxPosition(midpoint, classifierID)
-                rotation = self.getRotation(id)
+                normedmaxpoint = self.getNormedMaxPoint(midpoint, classifierID)
+                rotation = MathManager.getRotation(midpoint, maxpoint, normedmaxpoint)
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
                 extractedPices.insert(i, [extractPiceClassification, midpoint, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
                 # print progress status
                 print(str(int((i * 100) / (len(cnts) - 1))) + "%")
-        image = self.drawInformations(image)
+        image = self.drawInformations(image, extractedPices)
         return extractedPices, image
 
     @staticmethod
@@ -38,21 +38,20 @@ class PiceManager:
         return extractPice
 
     @staticmethod
-    def getContour(img):
-        cnts = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
-        sorted_ctrs = sorted(cnts, key=lambda ct: cv2.boundingRect(ctr)[0])
+    def getContour(img_thresh):
+        cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
 
-        for i, ctr in enumerate(sorted_ctrs):
+        for i, ctr in enumerate(cnts):
             if i == 0:
                 pass
             else:
                 return ctr
 
-    @staticmethod
-    def getRotation(id):
-        img_thresh = CameraManager.getImageFilebyID(id)
-        ctr = PiceManager.getContour(img_thresh)
-        return MathManager().getOrientationPoint(ctr)
+
+    def getNormedMaxPoint(self, midpoint, id):
+        img_thresh = CameraManager().getImageFilebyID(id)
+        ctr = self.getContour(img_thresh)
+        return MathManager().normedMaxPosition(midpoint, ctr)
 
     @staticmethod
     def getCorners(img):
@@ -88,10 +87,10 @@ class PiceManager:
             PiceManager.drawRotationCircle(image, midpoint, maxpoint, normedmaxpoint)
         return image
 
-    def getAllPicesyPath(self, path=None):
-        img_filtered, img_input, gray = CameraManager.getImagebyFile(path)
+    def getAllPicesbyPath(self, path=None):
+        img_filtered, img_input, gray = CameraManager().getImagebyFile(path)
         return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self, cameraIndex):
-        img_filtered, img_input, gray = CameraManager.getCameraFrameInput(cameraIndex)
+        img_filtered, img_input, gray = CameraManager().getAreaOfInterest(cameraindex=cameraIndex)
         return self.extractPices(img_filtered, img_input, gray)

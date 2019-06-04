@@ -1,15 +1,16 @@
 import cv2
 import math
 import numpy as np
+import imutils
 
 
 class MathManager:
-    @staticmethod
-    def midPointToCm(x, y):
+    def midPointToCm(self, ctr):
+        x, y = self.getMidpoint(ctr)
         dpi = 72
         conversion_factor = 2.54
-        x = (x * conversion_factor) / dpi
-        y = (y * conversion_factor) / dpi
+        x = round(((x * conversion_factor) / dpi)*100, 2)
+        y = round(((y * conversion_factor) / dpi)*100, 2)
         return x, y
 
     @staticmethod
@@ -18,10 +19,10 @@ class MathManager:
         if M["m10"] > 0:
             x = int(M["m10"] / M["m00"])
             y = int(M["m01"] / M["m00"])
-            return MathManager.midPointToCm(x, y)
+            return x, y
 
-    def normedMaxPosition(self, midpoint, classifireID):
-        ox, oy, omx, omy = self.getOrientationPoint(classifireID)
+    def normedMaxPosition(self, midpoint, ctr):
+        ox, oy, omx, omy = self.getOrientationPoint(ctr)
         mx, my = midpoint
         ox = (mx - omx) + ox
         oy = (my - omy) + oy

@@ -4,9 +4,6 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras import backend as K
 import tensorflow as tf
-import time as time
-
-
 import matplotlib.pyplot as plt
 
 from ObjectDetection.TensorBoardWrapper import TensorBoardWrapper
@@ -164,11 +161,6 @@ class TrainModel:
                         model.summary()
 
                         model.save("model/model.h5")
-
-                        # model_json = model.to_json()
-                        # with open("model/model_architecture.json", "w") as json_file:
-                        #         json_file.write(model_json)
-                       # model.save_weights('model/model_weights.h5')
 
                 except KeyboardInterrupt:
                         model.save("model/model.h5")

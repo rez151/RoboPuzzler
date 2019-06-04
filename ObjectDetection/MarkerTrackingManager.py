@@ -86,10 +86,10 @@ class MarkerTrackingManager:
                     rvec, tvec = ret[0][0, 0, :], ret[1][0, 0, :]
 
                     # -- Draw the detected marker and put a reference frame over it
-                    aruco.drawDetectedMarkers(frame, corners, ids)
-                    aruco.drawAxis(frame, camera_matrix, camera_distortion, rvec, tvec, 10)
+                    aruco.drawDetectedMarkers(img_input, corners, ids)
+                    aruco.drawAxis(img_input, camera_matrix, camera_distortion, rvec, tvec, 10)
 
-        return returnPoints, frame
+        return returnPoints, img_input
 
     def fourPoints(self, midpointlist):
         distanceList = list()
@@ -137,7 +137,11 @@ class MarkerTrackingManager:
 
 
 if __name__ == '__main__':
-    corners, frame = MarkerTrackingManager().getMarkerPoints(1)
+    cap = cv2.VideoCapture(1)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    ret, img_input = cap.read()
+    corners, frame = MarkerTrackingManager().getMarkerPoints(img_input)
     print(corners)
     cv2.imshow('frame', cv2.resize(frame, (1080, 720)))
 
