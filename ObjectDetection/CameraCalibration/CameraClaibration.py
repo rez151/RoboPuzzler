@@ -26,13 +26,6 @@ class CameraCalibration:
 
         self.makeCalibrationimages(frame_width,frame_height,camera_index)
 
-
-
-
-
-
-
-
         # termination criteria
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, dimension, 0.001)
 

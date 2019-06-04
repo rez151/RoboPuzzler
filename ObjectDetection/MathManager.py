@@ -6,10 +6,10 @@ import imutils
 
 class MathManager:
     def midPointToCm(self, midpoint):
-        dpi = 72
+        dpi = 150
         conversion_factor = 2.54
-        x = round(((midpoint[0] * conversion_factor) / dpi)*10, 2)
-        y = round(((midpoint[1] * conversion_factor) / dpi)*10, 2)
+        x = round(((midpoint[0] * conversion_factor) / dpi)*10, 4)
+        y = round(((midpoint[1] * conversion_factor) / dpi)*10, 4)
         return x, y
 
     @staticmethod
