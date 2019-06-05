@@ -5,8 +5,8 @@ import ObjectDetection.PiceManager as pm
 class Main:
     def startDetection(self, path):
         print("Start")
-        extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
-        # extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
+        # extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
+        extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
         cv2.imshow("Input", cv2.resize(img_input,(1015, 734)))
         file = open("output/cordinaten.txt", "w")
         print("Output:")
