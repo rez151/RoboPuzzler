@@ -40,9 +40,6 @@ class CameraManager:
         img_input = self.getUndistortImg(img_input)
         img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
-        cv2.resize(thresh, (2150, 1481))
-        cv2.resize(gray, (2150, 1481))
-        cv2.resize(img_input, (2150, 1481))
         return thresh, img_input, gray
 
     @staticmethod
@@ -51,8 +48,8 @@ class CameraManager:
             img = cv2.resize(img, (1920, 1080))
             corners = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)[0]
             if len(corners) == 4:
-                image_width = int(2150)
-                image_hight = int(1481)
+                image_width = int(2109)
+                image_hight = int(1477)
                 pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)
@@ -102,7 +99,7 @@ if __name__ == '__main__':
                 extractPice = PiceManager.PiceManager().getExtractPice(thresh, ctr)
                 cv2.imwrite("Images/" + str(i) + ".jpg", extractPice)
                 midpoint = MathManager.MathManager.getPiceMidpoint(ctr)
-                midpointCm = MathManager.MathManager().midPointToCm(ctr)
+                midpointCm = MathManager.MathManager().getPointToCm(ctr)
                 #cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
                 #cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
                 print(str(midpointCm[0]) + ", " + str(midpointCm[1]))

@@ -7,7 +7,7 @@ from imutils import perspective
 
 class MathManager:
     @staticmethod
-    def midPointToCm(midpoint):
+    def getPointToCm(midpoint):
         dpi = 150
         conversion_factor = 2.54
         x = round(((midpoint[0] * conversion_factor) / dpi) * 10, 4)
@@ -85,14 +85,15 @@ class MathManager:
     def midpoint(p1, p2):
         return (p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5
 
-    def getPiceMeasurement(self, ctr):
-        areaofInterest_width = 36.4 # cm
-        pixelsPerMetric = areaofInterest_width / 2150
+    def getPiceMeasurement(self, ctr, img):
+        areaofInterest_width = 35.7  # cm
+        pixelsPerMetric = 2109 / areaofInterest_width #1418
 
         box = cv2.minAreaRect(ctr)
         box = cv2.boxPoints(box)
         box = np.array(box, dtype="int")
         box = perspective.order_points(box)
+        cv2.drawContours(img, [box.astype("int")], -1, (0, 255, 0), 2)
 
         (tl, tr, br, bl) = box
         (tltrX, tltrY) = self.midpoint(tl, tr)
@@ -102,6 +103,9 @@ class MathManager:
         (trbrX, trbrY) = self.midpoint(tr, br)
 
         mx, my = self.midpoint([tltrX, tltrY], [blbrX, blbrY])
+        mx = (mx / pixelsPerMetric) * 10
+        my = (my / pixelsPerMetric) * 10
+
 
         dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
         dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
@@ -109,4 +113,25 @@ class MathManager:
         dimA = dA / pixelsPerMetric
         dimB = dB / pixelsPerMetric
 
-        return int(mx), int(my)
+        # draw the midpoints on the image
+        cv2.circle(img, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+        cv2.circle(img, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+        cv2.circle(img, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+        cv2.circle(img, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+
+        cv2.circle(img, (int(mx), int(my)), 10, (255, 0, 255), -1)
+
+        # draw lines between the midpoints
+        cv2.line(img, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
+                 (255, 0, 255), 2)
+        cv2.line(img, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
+                 (255, 0, 255), 2)
+
+        cv2.putText(img, "{:.1f}cm".format(dimA),
+                    (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65, (0, 0, 0), 2)
+        cv2.putText(img, "{:.1f}cm".format(dimB),
+                    (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65, (0, 0, 0), 2)
+
+        return mx, my

@@ -17,20 +17,20 @@ class PiceManager:
                 continue
 
             if i == len(cnts) - 1:
-                print(len(cnts))
                 print("Done  \n")
             else:
                 # get Extracted pice
                 extractPiceClassification = self.getExtractPice(gray, ctr)
                 midpoint = MathManager.getPiceMidpoint(ctr)
-                midpointcm = MathManager.midPointToCm(midpoint)
+                print(midpoint)
+                midpointcm = MathManager.getPointToCm(midpoint)
                 maxpoint = MathManager().getPointMaxDistance(midpoint, ctr)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
                 normedmaxpoint = self.getNormedMaxPoint(midpoint, classifierID)
                 rotation = MathManager.getRotation(midpoint, maxpoint, normedmaxpoint)
-                dimension = MathManager().getPiceMeasurement(ctr)
-                cv2.circle(image, dimension, 7, (0, 255, 0), -1)
-                print(dimension)
+                dimension = MathManager().getPiceMeasurement(ctr, image)
+                print("{:.2f}mm".format(dimension[0]) + ", " + "{:.2f}mm".format(dimension[1]))
+
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
                 extractedPices.insert(i, [extractPiceClassification, midpoint, midpointcm, maxpoint, str(id), classifierID, normedmaxpoint, rotation, ctr])
@@ -86,7 +86,7 @@ class PiceManager:
             # draw Contours
             cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
             # draw Midpoint
-            #   cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
+            # cv2.circle(image, midpoint, 7, (255, 255, 0), -1)
             # draw MaxPoint
             cv2.circle(image, maxpoint, 7, (0, 255, 0), -1)
             # draw Classification text
