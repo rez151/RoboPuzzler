@@ -86,8 +86,8 @@ class MathManager:
         return (p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5
 
     def getPiceMeasurement(self, ctr, img):
-        areaofInterest_width = 35.7  # cm
-        pixelsPerMetric = 2109 / areaofInterest_width #1418
+        areaofInterest_width = 36.45  # cm
+        pixelsPerMetric = 4305 / areaofInterest_width #1418
 
         box = cv2.minAreaRect(ctr)
         box = cv2.boxPoints(box)
@@ -129,9 +129,9 @@ class MathManager:
 
         cv2.putText(img, "{:.1f}cm".format(dimA),
                     (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.65, (0, 0, 0), 2)
+                    1, (0, 0, 0), 2)
         cv2.putText(img, "{:.1f}cm".format(dimB),
                     (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.65, (0, 0, 0), 2)
+                    1, (0, 0, 0), 2)
 
         return mx, my

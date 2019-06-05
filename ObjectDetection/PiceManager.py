@@ -13,7 +13,7 @@ class PiceManager:
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
-            if cv2.contourArea(ctr) < 100:
+            if cv2.contourArea(ctr) < 1000:
                 continue
 
             if i == len(cnts) - 1:
