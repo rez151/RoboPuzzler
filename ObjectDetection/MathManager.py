@@ -106,7 +106,6 @@ class MathManager:
         mx = (mx / pixelsPerMetric) * 10
         my = (my / pixelsPerMetric) * 10
 
-
         dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
         dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
 

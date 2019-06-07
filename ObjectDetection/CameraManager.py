@@ -82,8 +82,7 @@ class CameraManager:
                     print("Saved " + str(i) + "picture to "+path)
             print("Saved all extract pictures")
         except Exception as e:
-            print("Error: "+ e)
-
+            print("Error: " + e)
 
 
 if __name__ == '__main__':
@@ -99,8 +98,6 @@ if __name__ == '__main__':
                 cv2.imwrite("Images/" + str(i) + ".jpg", extractPice)
                 midpoint = MathManager.MathManager.getPiceMidpoint(ctr)
                 midpointCm = MathManager.MathManager().getPointToCm(ctr)
-                #cv2.circle(image, midpoint, 7, (0, 255, 0), -1)
-                #cv2.drawContours(image, [ctr], 0, (0, 0, 255), 2)
                 print(str(midpointCm[0]) + ", " + str(midpointCm[1]))
     except Exception as e:
         print(e)
