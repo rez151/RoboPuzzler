@@ -1,9 +1,13 @@
 Installation
 
-Wir benutzen in diesem Projekt Mac OS zum Entwickeln und zur Ausführung Windows. Die Anleitung zur Installation unter Linux (hier Ubuntu) führen wir hier nur theoretisch auf, deshalb können Abweichungen auftreten.
+Wir benutzen in diesem Projekt Mac OS zum Entwickeln und zur Ausführung Windows.
+Die Anleitung zur Installation unter Linux (hier Ubuntu) führen wir hier nur theoretisch auf, deshalb können
+Abweichungen auftreten.
 Als Entwicklungsumgebung nutzen wir pyCharm von Jetbrains.
 Pakete
-Einige Pakete werden für dieses Projekt nicht unbedingt benötigt, jedoch haben wir alle installiert. Außerdem kann es sein, dass einige Pakete bei anderen schon mit installiert werden oder hier nicht aufgeführte Pakete automatisch in der IDE installiert wurden.
+Einige Pakete werden für dieses Projekt nicht unbedingt benötigt, jedoch haben wir alle installiert.
+Außerdem kann es sein, dass einige Pakete bei anderen schon mit installiert werden oder hier nicht aufgeführte Pakete
+automatisch in der IDE installiert wurden.
 •	Scipy
 •	Numpy
 •	Matplotlib
@@ -33,7 +37,8 @@ BLAS-Bobliothek für schnelle Tensoroperationen auf der CPU:
     $ sudo apt-get install build-essential cmake git \
     unzip pkg-config libopenblas-dev liblapack-dev
 
-SciPy, Numpy und  Matplotlib, um mit Python Machine Learning zu betreiben und wissenschaftliche Berechnungen durchzuführen:
+SciPy, Numpy und  Matplotlib, um mit Python Machine Learning zu betreiben und wissenschaftliche Berechnungen
+durchzuführen:
     $ sudo apt-get install python-numpy python-scipy \
         python-matplotlib
 
