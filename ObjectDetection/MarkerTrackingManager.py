@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import cv2.aruco as aruco
 import math
+from ObjectDetection.MathManager import MathManager
 
 
 class MarkerTrackingManager:
@@ -89,7 +90,8 @@ class MarkerTrackingManager:
                     aruco.drawDetectedMarkers(img_input, corners, ids)
                     aruco.drawAxis(img_input, camera_matrix, camera_distortion, rvec, tvec, 10)
 
-        return returnPoints, img_input
+        areasize = self.getAreaSize(returnPoints)
+        return returnPoints, areasize, img_input
 
     def fourPoints(self, midpointlist):
         distanceList = list()
@@ -97,7 +99,7 @@ class MarkerTrackingManager:
             for p1 in midpointlist:
                 for p2 in midpointlist:
                     if (p1 != p2):
-                        distance = self.getPointDistance(p1, p2)
+                        distance = MathManager.getPointDistance(p1, p2)
                         distanceList.append([int(distance), p1, p2])
 
             distanceList.sort()
@@ -112,7 +114,7 @@ class MarkerTrackingManager:
             outlist = []
             # add wight
             for point in pointList:
-                out = [int(self.getPointDistance([0, 0], point)), [point]]
+                out = [int(MathManager.getPointDistance([0, 0], point)), [point]]
                 outlist.append(out)
 
             outlist.sort()
@@ -132,8 +134,13 @@ class MarkerTrackingManager:
 
     pass
 
-    def getPointDistance(self, p1, p2):
-        return math.sqrt(math.pow((p2[1] - p1[1]), 2) + math.pow((p2[0] - p1[0]), 2))
+    def getAreaSize(self, areapoints):
+        p1 = areapoints[0]
+        p2 = areapoints[1]
+        p3 = areapoints[2]
+        x = MathManager.getPointDistance(p1, p3)
+        y = MathManager.getPointDistance(p1, p2)
+        return x, y
 
 
 if __name__ == '__main__':

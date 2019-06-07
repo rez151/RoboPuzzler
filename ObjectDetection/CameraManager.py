@@ -45,10 +45,10 @@ class CameraManager:
     def arucoMarkerCut(img):
         try:
             img = cv2.resize(img, (1920, 1080))
-            corners = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)[0]
+            corners, areasize, _ = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)
             if len(corners) == 4:
-                image_width = int(4305)
-                image_hight = int(2953)
+                image_width = int(areasize[0])
+                image_hight = int(areasize[1])
                 pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)

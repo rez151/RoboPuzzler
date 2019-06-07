@@ -87,7 +87,7 @@ class MathManager:
 
     def getPiceMeasurement(self, ctr, img):
         areaofInterest_width = 36.45  # cm
-        pixelsPerMetric = 4305 / areaofInterest_width #1418
+        pixelsPerMetric = img.shape[1] / areaofInterest_width
 
         box = cv2.minAreaRect(ctr)
         box = cv2.boxPoints(box)
