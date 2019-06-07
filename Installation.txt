@@ -1,0 +1,107 @@
+Installation
+
+Wir benutzen in diesem Projekt Mac OS zum Entwickeln und zur Ausführung Windows. Die Anleitung zur Installation unter Linux (hier Ubuntu) führen wir hier nur theoretisch auf, deshalb können Abweichungen auftreten.
+Als Entwicklungsumgebung nutzen wir pyCharm von Jetbrains.
+Pakete
+Einige Pakete werden für dieses Projekt nicht unbedingt benötigt, jedoch haben wir alle installiert. Außerdem kann es sein, dass einige Pakete bei anderen schon mit installiert werden oder hier nicht aufgeführte Pakete automatisch in der IDE installiert wurden.
+•	Scipy
+•	Numpy
+•	Matplotlib
+•	HDF5
+•	Graphviz
+•	pydot-ng
+•	CUDA
+•	cuDNN
+•	tensorflow
+•	opencv-contrib-python
+•	keras
+•	imutils
+•	sklearn
+•	Pillow
+•	Augmentor
+•	Joblib
+
+
+Ubuntu
+
+Quelle: Francois Chollet. Deep Learning mit Python und Keras (German Edition)
+
+    $ sudo apt-get update && sudo apt-get upgrade
+    $ sudo apt-get install python3-pip python3-dev
+
+BLAS-Bobliothek für schnelle Tensoroperationen auf der CPU:
+    $ sudo apt-get install build-essential cmake git \
+    unzip pkg-config libopenblas-dev liblapack-dev
+
+SciPy, Numpy und  Matplotlib, um mit Python Machine Learning zu betreiben und wissenschaftliche Berechnungen durchzuführen:
+    $ sudo apt-get install python-numpy python-scipy \
+        python-matplotlib
+
+HDF5 zur Speicherung von großen numerischen Daten in einem effizienten Binärformat:
+    $ sudo apt-get install libhdf5-serial-dev python-h5py
+
+Graphviz und pydot-ng zur Visualisierung von Keras-Modelle:
+    $ sudo apt-get install graphviz
+    $ sudo pip3 install pydot-ng
+
+OpenCV:
+evtl. wird eine andere Version benötigt, in diesem Fall installieren Sie „opencv-contrib-python“
+    $ sudo apt-get install python-opencv
+
+CUDA, cuDNN und Tensorflow mit oder ohne GPU-Unterstützung:
+(CUDA und cuDNN sind notwendig für die GPU Unterstützung)
+1.
+    $ wget http://developer.download.nvidia.com/ \
+    compute/cuda/repos/ubuntu1604/x86_64/ \
+    cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
+2.
+    $ sudo dpkg i cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
+    $ sudo apt-key adv fetch-keys \ http://developer.download.nvidia.com/compute/cuda/ \ repos/ubuntu1604/ ➥ x86_64/7fa2af80.pub
+    $ sudo apt-get update
+    $ sudo apt-get install cuda-8-0
+3.cuDNN erhältlich unter https://developer.nvidia.com/cudnn und die Installation mit dem Befehl:
+    $ sudo dpkg i dpkg i libcudnn6*.deb
+4.
+Tensorflow mit GPU Unterstützung:
+    $ sudo pip3 install tensorflow-gpu
+Tensorflow ohne GPU Unterstützung:
+    $ sudo pip3 install tensorflow
+
+Keras:
+    $ sudo pip install keras
+Weitere Pakete:
+    $ sudo pip3 install sklearn
+    $ sudo pip install pillow
+    $ sudo pip install imutils
+
+
+Mac OS
+
+Quelle: https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class01_intro_python.ipynb
+
+Zur Installation unter Mac OS benutzen wir Miniconda (Anaconda) erhältlich unter https://docs.conda.io/en/latest/miniconda.html.
+Miniconda ist eine Freemium-Open-Source-Distribution für die Programmiersprachen Python und R.
+
+Folgende Schritte haben wir nach der Installation von Miniconda durchgeführt (Terminalanweisungen):
+•	conda create --name tensorflow python=3.6
+•	source activate tensorflow
+•	conda install scipy
+•	pip install --upgrade sklearn
+•	pip install --upgrade pandas
+•	pip install --upgrade pandas-datareader
+•	pip install --upgrade matplotlib
+•	pip install --upgrade pillow
+•	pip install --upgrade tqdm
+•	pip install --upgrade requests
+•	pip install --upgrade h5py
+•	pip install --upgrade pyyaml
+•	pip install --upgrade psutil
+•	pip install --upgrade tensorflow==1.12.0
+•	pip install --upgrade keras==2.2.4
+•	pip install --upgrade imutil
+•	pip install --upgrade augmentor
+•	pip install --upgrade joblib
+•	pip install --upgrade opencv-contrib-python
+
+
+Windowsanleitung tbd...
