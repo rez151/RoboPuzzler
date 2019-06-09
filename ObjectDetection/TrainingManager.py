@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, GlobalAveragePooling2D
+from keras.layers import Conv2D, Activation, Dropout, GlobalAveragePooling2D
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
@@ -62,8 +62,7 @@ class TrainModel:
         model.add(Conv2D(6, (1, 1), padding='valid'))
         model.add(GlobalAveragePooling2D())
         model.add(Activation('softmax'))
-        sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
-        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
         train_datagen = ImageDataGenerator(rescale=1. / 255,
                                            featurewise_center=False,  # set input mean to 0 over the dataset

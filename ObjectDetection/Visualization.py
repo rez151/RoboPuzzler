@@ -8,7 +8,6 @@ import cv2
 
 class Visualization:
     def visualization(self):
-
         model = load_model('model/model.h5')
         model.summary()
         layer_outputs = [layer.output for layer in model.layers[:7]]

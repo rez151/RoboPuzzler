@@ -3,7 +3,8 @@ import ObjectDetection.PiceManager as pm
 
 
 class Main:
-    def startDetection(self, path):
+    @staticmethod
+    def startDetection(path):
         print("Start")
         # extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
         extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(1)
@@ -26,4 +27,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection("TestImages/testwithallpicesnorotated.jpg")
+    Main.startDetection("TestImages/testwithallpicesnorotated.jpg")

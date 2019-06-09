@@ -1,41 +1,10 @@
 import numpy as np
 import cv2
 import cv2.aruco as aruco
-import math
 from ObjectDetection.MathManager import MathManager
 
 
 class MarkerTrackingManager:
-    # --- Define Tag
-    id_to_find = [72]
-    marker_size = 1.5  # [cm]
-
-    # Checks if a matrix is a valid rotation matrix.
-    @staticmethod
-    def isRotationMatrix(R):
-        Rt = np.transpose(R)
-        shouldBeIdentity = np.dot(Rt, R)
-        I = np.identity(3, dtype=R.dtype)
-        n = np.linalg.norm(I - shouldBeIdentity)
-        return n < 1e-6
-
-    # Calculates rotation matrix to euler angles
-    # The result is the same as MATLAB except the order
-    # of the euler angles ( x and z are swapped ).
-    def rotationMatrixToEulerAngles(self, R):
-        assert (self.isRotationMatrix(R))
-        sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
-        singular = sy < 1e-6
-        if not singular:
-            x = math.atan2(R[2, 1], R[2, 2])
-            y = math.atan2(-R[2, 0], sy)
-            z = math.atan2(R[1, 0], R[0, 0])
-        else:
-            x = math.atan2(-R[1, 2], R[1, 1])
-            y = math.atan2(-R[2, 0], sy)
-            z = 0
-        return np.array([x, y, z])
-
     def getMarkerPoints(self, img_input):
         returnPoints = []
 
@@ -54,34 +23,71 @@ class MarkerTrackingManager:
         aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_ARUCO_ORIGINAL)
         parameters = aruco.DetectorParameters_create()
 
-        # -- Font for the text in the image
-        font = cv2.FONT_HERSHEY_PLAIN
-
-        img_input = cv2.resize(img_input, (1920, 1080))
-
-        # -- Convert in gray scale
-        gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
-
         # -- Find all the aruco markers in the image
-        corners, ids, rejected = aruco.detectMarkers(image=gray, dictionary=aruco_dict, parameters=parameters,
+        corners, ids, rejected = aruco.detectMarkers(image=img_input, dictionary=aruco_dict, parameters=parameters,
                                                      cameraMatrix=camera_matrix, distCoeff=camera_distortion)
-
-        # print(str(len(ids)) + " marker found.")
 
         for p in corners:
             for p1 in p:
                 returnPoints.append([int(p1[0][0]), int(p1[0][1])])
 
-        returnPoints = self.fourPoints(returnPoints)
+        returnPoints = self.getfourPoints(returnPoints)
 
+        self.drawArucoMarker(ids, corners, camera_matrix, camera_distortion)
+
+        areasize = self.getAreaSize(returnPoints)
+        return returnPoints, areasize, img_input
+
+    def getfourPoints(self, midpointlist):
+        pointList = self.findOuterRectanglePoints(midpointlist)
+
+        outlist = list()
+        # add wight dependending on distance to (0, 0)
+        for point in pointList:
+            out = [int(MathManager.getPointDistance([0, 0], point)), [point]]
+            outlist.append(out)
+
+        outlist.sort()
+
+        p1 = outlist.pop(0)[1]
+        p4 = outlist.pop(len(outlist) - 1)[1]
+        if outlist[0][1][0] < outlist[1][1][0]:
+            p2 = outlist.pop(1)[1]
+            p3 = outlist.pop(0)[1]
+        else:
+            p3 = outlist.pop(1)[1]
+            p2 = outlist.pop(0)[1]
+
+        return [p1[0], p2[0], p3[0], p4[0]]
+
+    @staticmethod
+    def findOuterRectanglePoints(poinlist):
+        distanceList = list()
+        pointList = list()
+        for p1 in poinlist:
+            for p2 in poinlist:
+                if p1 != p2:
+                    distance = MathManager.getPointDistance(p1, p2)
+                    distanceList.append([int(distance), p1, p2])
+
+        distanceList.sort()
+
+        pointList.append(distanceList[len(distanceList) - 1][1])
+        pointList.append(distanceList[len(distanceList) - 1][2])
+        pointList.append(distanceList[len(distanceList) - 3][1])
+        pointList.append(distanceList[len(distanceList) - 3][2])
+
+        return pointList
+
+    @staticmethod
+    def drawArucoMarker(ids, corners, camera_matrix, camera_distortion):
+        # --- Define Tag
+        id_to_find = [72]
+        marker_size = 1.5  # [cm]
         if ids is not None:
             for id in ids:
-                if self.id_to_find.count(id) == 1:
-                    # -- ret = [rvec, tvec, ?]
-                    # -- array of rotation and position of each marker in camera frame
-                    # -- rvec = [[rvec_1], [rvec_2], ...]    attitude of the marker respect to camera frame
-                    # -- tvec = [[tvec_1], [tvec_2], ...]    position of the marker in camera frame
-                    ret = aruco.estimatePoseSingleMarkers(corners, self.marker_size, camera_matrix, camera_distortion)
+                if id_to_find.count(id) == 1:
+                    ret = aruco.estimatePoseSingleMarkers(corners, marker_size, camera_matrix, camera_distortion)
 
                     # -- Unpack the output, get only the first
                     rvec, tvec = ret[0][0, 0, :], ret[1][0, 0, :]
@@ -89,52 +95,10 @@ class MarkerTrackingManager:
                     # -- Draw the detected marker and put a reference frame over it
                     aruco.drawDetectedMarkers(img_input, corners, ids)
                     aruco.drawAxis(img_input, camera_matrix, camera_distortion, rvec, tvec, 10)
+        pass
 
-        areasize = self.getAreaSize(returnPoints)
-        return returnPoints, areasize, img_input
-
-    def fourPoints(self, midpointlist):
-        distanceList = list()
-        try:
-            for p1 in midpointlist:
-                for p2 in midpointlist:
-                    if (p1 != p2):
-                        distance = MathManager.getPointDistance(p1, p2)
-                        distanceList.append([int(distance), p1, p2])
-
-            distanceList.sort()
-
-            pointList = list()
-
-            pointList.append(distanceList[len(distanceList) - 1][1])
-            pointList.append(distanceList[len(distanceList) - 1][2])
-            pointList.append(distanceList[len(distanceList) - 3][1])
-            pointList.append(distanceList[len(distanceList) - 3][2])
-
-            outlist = []
-            # add wight
-            for point in pointList:
-                out = [int(MathManager.getPointDistance([0, 0], point)), [point]]
-                outlist.append(out)
-
-            outlist.sort()
-
-            p1 = outlist.pop(0)[1]
-            p4 = outlist.pop(len(outlist) - 1)[1]
-            if (outlist[0][1][0] < outlist[1][1][0]):
-                p2 = outlist.pop(1)[1]
-                p3 = outlist.pop(0)[1]
-            else:
-                p3 = outlist.pop(1)[1]
-                p2 = outlist.pop(0)[1]
-
-            return [p1[0], p2[0], p3[0], p4[0]]
-        except Exception:
-            pass
-
-    pass
-
-    def getAreaSize(self, areapoints):
+    @staticmethod
+    def getAreaSize(areapoints):
         p1 = areapoints[0]
         p2 = areapoints[1]
         p3 = areapoints[2]
@@ -148,9 +112,10 @@ if __name__ == '__main__':
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     ret, img_input = cap.read()
-    corners, frame = MarkerTrackingManager().getMarkerPoints(img_input)
-    print(corners)
-    cv2.imshow('frame', cv2.resize(frame, (1080, 720)))
+    gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
+    returnPoints, areasize, img_input = MarkerTrackingManager().getMarkerPoints(gray)
+    print(returnPoints)
+    cv2.imshow('frame', cv2.resize(img_input, (1080, 720)))
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()

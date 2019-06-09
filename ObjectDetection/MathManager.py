@@ -103,8 +103,8 @@ class MathManager:
         (trbrX, trbrY) = self.midpoint(tr, br)
 
         mx, my = self.midpoint([tltrX, tltrY], [blbrX, blbrY])
-        mx = (mx / pixelsPerMetric) * 10
-        my = (my / pixelsPerMetric) * 10
+        mx = (mx / pixelsPerMetric) * 10  # to mm
+        my = (my / pixelsPerMetric) * 10  # to mm
 
         dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
         dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
@@ -112,24 +112,16 @@ class MathManager:
         dimA = dA / pixelsPerMetric
         dimB = dB / pixelsPerMetric
 
-        # draw the midpoints on the image
-        cv2.circle(img, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-        cv2.circle(img, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-        cv2.circle(img, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-        cv2.circle(img, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
-
-        cv2.circle(img, (int(mx), int(my)), 10, (255, 0, 255), -1)
-
         # draw lines between the midpoints
+        cv2.circle(img, (int(mx), int(my)), 10, (255, 0, 255), -1)
         cv2.line(img, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
                  (255, 0, 255), 2)
         cv2.line(img, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
                  (255, 0, 255), 2)
-
-        cv2.putText(img, "{:.1f}cm".format(dimA),
+        cv2.putText(img, "{:.2f}cm".format(dimA),
                     (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
                     1, (0, 0, 0), 2)
-        cv2.putText(img, "{:.1f}cm".format(dimB),
+        cv2.putText(img, "{:.2f}cm".format(dimB),
                     (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
                     1, (0, 0, 0), 2)
 

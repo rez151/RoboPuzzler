@@ -13,7 +13,7 @@ class PiceManager:
 
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
-            if cv2.contourArea(ctr) < 1000:
+            if cv2.contourArea(ctr) < 100:
                 continue
 
             if i == len(cnts) - 1:
@@ -22,7 +22,6 @@ class PiceManager:
                 # get Extracted pice
                 extractPiceClassification = self.getExtractPice(gray, ctr)
                 midpoint = MathManager.getPiceMidpoint(ctr)
-                print(midpoint)
                 midpointcm = MathManager.getPointToCm(midpoint)
                 maxpoint = MathManager().getPointMaxDistance(midpoint, ctr)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
@@ -96,7 +95,7 @@ class PiceManager:
         return image
 
     def getAllPicesbyPath(self, path=None):
-        img_filtered, img_input, gray = CameraManager().getImagebyFile(path)
+        img_filtered, img_input, gray = CameraManager().getImageByFile(path)
         return self.extractPices(img_filtered, img_input, gray)
 
     def getAllPicesbyFrame(self, cameraIndex):

@@ -2,13 +2,10 @@ import cv2
 import numpy as np
 import ObjectDetection.MarkerTrackingManager as MarkerTrackingManager
 import ObjectDetection.PiceManager as PiceManager
-import ObjectDetection.MathManager as MathManager
 
 
 class CameraManager:
-    thresh_filter = 245
-
-    def getImagebyFile(self, path):
+    def getImageByFile(self, path):
         img_input = cv2.imread(path)
         thresh, gray = self.imageFilter(img_input)
         return thresh, img_input, gray
@@ -24,6 +21,7 @@ class CameraManager:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         ret, img_input = cap.read()
+        img_input = cv2.resize(img_input, (1920, 1080))
         return img_input
 
     @staticmethod
@@ -37,14 +35,13 @@ class CameraManager:
     def getAreaOfInterest(self, cameraindex):
         img_input = self.getCameraFrameInput(cameraindex)
         img_input = self.getUndistortImg(img_input)
-        img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
+        img_input = self.arucoMarkerCut(gray)
         return thresh, img_input, gray
 
     @staticmethod
     def arucoMarkerCut(img):
         try:
-            img = cv2.resize(img, (1920, 1080))
             corners, areasize, _ = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)
             if len(corners) == 4:
                 image_width = int(areasize[0])
@@ -57,16 +54,14 @@ class CameraManager:
             print("Error: arucoMarkerCut, " + str(e))
         return img
 
-    def imageFilter(self, img):
+    @staticmethod
+    def imageFilter(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (23, 23), 0)
-        thresh = cv2.threshold(blur, self.thresh_filter, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+        thresh = cv2.threshold(blur, 240, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
         thresh = cv2.erode(thresh, None, iterations=0)
         thresh = cv2.dilate(thresh, None, iterations=0)
         return thresh, gray
-
-    def setThresh_filter(self, value):
-        self.thresh_filter = value
 
     def saveExtractImages(self):
         thresh, image, gray = self.getAreaOfInterest(1)
@@ -86,23 +81,4 @@ class CameraManager:
 
 
 if __name__ == '__main__':
-    thresh, image, gray = CameraManager().getAreaOfInterest(1)
-    cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
-
-    try:
-        for i, ctr in enumerate(cnts):
-            if i == (len(cnts) - 1):
-                print("Done  \n")
-            else:
-                extractPice = PiceManager.PiceManager().getExtractPice(thresh, ctr)
-                cv2.imwrite("Images/" + str(i) + ".jpg", extractPice)
-                midpoint = MathManager.MathManager.getPiceMidpoint(ctr)
-                midpointCm = MathManager.MathManager().getPointToCm(ctr)
-                print(str(midpointCm[0]) + ", " + str(midpointCm[1]))
-    except Exception as e:
-        print(e)
-
-    cv2.imshow("Thresh", cv2.resize(image, (1015, 734)))
-
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    CameraManager().saveExtractImages()

@@ -3,13 +3,12 @@ from keras.models import load_model
 import numpy as np
 import cv2
 
-
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, GlobalAveragePooling2D
+from keras.layers import Conv2D, Activation, Dropout, GlobalAveragePooling2D
 from keras.optimizers import SGD
 
-class Classifire:
 
+class Classifire:
     def Classifier(self, img):
         image_width = 224
         image_hight = 224
@@ -24,17 +23,17 @@ class Classifire:
         id = prediction.argmax(1)[0]
         print("prediction " + str(id) + " to: " + str(round((prediction[0][id] * 100), 2)) + "%")
 
-        if (id == 0):
+        if id == 0:
             return "Elefant", id
-        if (id == 1):
+        if id == 1:
             return "Frosch", id
-        if (id == 2):
+        if id == 2:
             return "Lowe", id
-        if (id == 3):
+        if id == 3:
             return "Schmetterling", id
-        if (id == 4):
+        if id == 4:
             return "Sonne", id
-        if (id == 5):
+        if id == 5:
             return "Vogel", id
 
     @staticmethod
