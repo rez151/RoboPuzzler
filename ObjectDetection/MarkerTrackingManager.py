@@ -5,7 +5,8 @@ from ObjectDetection.MathManager import MathManager
 
 
 class MarkerTrackingManager:
-    def getMarkerPoints(self, img_input):
+    def getMarkerPoints(self, gray):
+        gray = cv2.cvtColor(gray.copy(), cv2.COLOR_BGR2GRAY)
         returnPoints = []
 
         # --- Get the camera calibration path
@@ -24,7 +25,7 @@ class MarkerTrackingManager:
         parameters = aruco.DetectorParameters_create()
 
         # -- Find all the aruco markers in the image
-        corners, ids, rejected = aruco.detectMarkers(image=img_input, dictionary=aruco_dict, parameters=parameters,
+        corners, ids, rejected = aruco.detectMarkers(image=gray, dictionary=aruco_dict, parameters=parameters,
                                                      cameraMatrix=camera_matrix, distCoeff=camera_distortion)
 
         for p in corners:
@@ -33,10 +34,10 @@ class MarkerTrackingManager:
 
         returnPoints = self.getfourPoints(returnPoints)
 
-        self.drawArucoMarker(ids, corners, camera_matrix, camera_distortion)
+        self.drawArucoMarker(ids, corners, camera_matrix, camera_distortion, gray)
 
         areasize = self.getAreaSize(returnPoints)
-        return returnPoints, areasize, img_input
+        return returnPoints, areasize, gray
 
     def getfourPoints(self, midpointlist):
         pointList = self.findOuterRectanglePoints(midpointlist)
@@ -80,7 +81,7 @@ class MarkerTrackingManager:
         return pointList
 
     @staticmethod
-    def drawArucoMarker(ids, corners, camera_matrix, camera_distortion):
+    def drawArucoMarker(ids, corners, camera_matrix, camera_distortion, img_input):
         # --- Define Tag
         id_to_find = [72]
         marker_size = 1.5  # [cm]
@@ -112,8 +113,7 @@ if __name__ == '__main__':
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     ret, img_input = cap.read()
-    gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
-    returnPoints, areasize, img_input = MarkerTrackingManager().getMarkerPoints(gray)
+    returnPoints, areasize, img_input = MarkerTrackingManager().getMarkerPoints(img_input)
     print(returnPoints)
     cv2.imshow('frame', cv2.resize(img_input, (1080, 720)))
 

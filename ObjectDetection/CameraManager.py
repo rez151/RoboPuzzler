@@ -20,8 +20,10 @@ class CameraManager:
         cap = cv2.VideoCapture(cameraindex)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-        ret, img_input = cap.read()
+        img_input = cap.read()[1]
+        cap.release()
         img_input = cv2.resize(img_input, (1920, 1080))
+
         return img_input
 
     @staticmethod
@@ -35,30 +37,33 @@ class CameraManager:
     def getAreaOfInterest(self, cameraindex):
         img_input = self.getCameraFrameInput(cameraindex)
         img_input = self.getUndistortImg(img_input)
+        img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
-        img_input = self.arucoMarkerCut(gray)
+        path = "TestImages/" + str(4) + ".jpg"
+        cv2.imwrite(path, img_input)
         return thresh, img_input, gray
 
     @staticmethod
-    def arucoMarkerCut(img):
+    def arucoMarkerCut(img_input):
+
         try:
-            corners, areasize, _ = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img)
+            corners, areasize, _ = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img_input)
             if len(corners) == 4:
-                image_width = int(areasize[0])
-                image_hight = int(areasize[1])
+                image_width = int(areasize[1])
+                image_hight = int(areasize[0])
                 pts1 = np.float32(corners)
                 pts2 = np.float32([[0, 0], [image_width, 0], [0, image_hight], [image_width, image_hight]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)
-                img = cv2.warpPerspective(img, M, (image_width, image_hight))
+                img_input = cv2.warpPerspective(img_input, M, (image_width, image_hight))
         except Exception as e:
             print("Error: arucoMarkerCut, " + str(e))
-        return img
+        return img_input
 
     @staticmethod
     def imageFilter(img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (23, 23), 0)
-        thresh = cv2.threshold(blur, 240, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+        thresh = cv2.threshold(blur, 245, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
         thresh = cv2.erode(thresh, None, iterations=0)
         thresh = cv2.dilate(thresh, None, iterations=0)
         return thresh, gray
@@ -81,4 +86,7 @@ class CameraManager:
 
 
 if __name__ == '__main__':
-    CameraManager().saveExtractImages()
+    img = CameraManager().getCameraFrameInput(1)
+    cv2.imshow("img", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

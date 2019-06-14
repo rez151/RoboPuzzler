@@ -12,7 +12,7 @@ class Classifire:
     def Classifier(self, img):
         image_width = 224
         image_hight = 224
-        modelpath = "model/first_try-2.h5"
+        modelpath = "model/model.h5"
         image = self.resizeImageToInputSize(img, image_width, image_hight)
 
         # load model
@@ -43,8 +43,7 @@ class Classifire:
     @staticmethod
     def resizeImageToInputSize(img, image_width, image_hight):
         # resize image to match input size
-        image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (image_width, image_hight))
+        image = cv2.resize(img, (image_width, image_hight))
         image = image.astype("float") / 255.0
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
