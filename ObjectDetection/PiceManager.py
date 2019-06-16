@@ -29,8 +29,12 @@ class PiceManager:
                 midpoint = MathManager.getPiceMidpoint(ctr)
                 midpointmm = MathManager().getPointToMM(img_input, midpoint)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
-                rotation = MathManager().getPiceRotation(ctr, id, image)
+                normedctr = self.getContour(CameraManager().getImageFilebyID(classifierID))
+                rotation = 0 # MathManager().getPiceRotation(ctr, id, image)
                 dimension = MathManager().getPiceDimension(ctr, image)
+
+                a = MathManager.getNormedContour(midpoint, MathManager.getPiceMidpoint(normedctr), normedctr)
+                cv2.drawContours(image, [a], 0, (0, 0, 255), 1)
 
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
@@ -49,9 +53,8 @@ class PiceManager:
     @staticmethod
     def getContour(img_thresh):
         cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
-
         for i, ctr in enumerate(cnts):
-            if i == 0:
+            if i == len(cnts) -1:
                 pass
             else:
                 return ctr

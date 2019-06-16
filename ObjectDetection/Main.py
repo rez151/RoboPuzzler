@@ -36,4 +36,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection(1, 0)
+    Main().startDetection(variant=1, imgid=1)

@@ -59,11 +59,9 @@ class MathManager:
 
     @staticmethod
     def rotatePoint(p, midpoint, a):
-        x0, y0 = midpoint
-        x1, y1 = p
-        x2 = ((x1 - x0) * math.cos(a)) - ((y1 - y0) * math.sin(a)) + x0
-        y2 = ((x1 - x0) * math.sin(a)) + ((y1 - y0) * math.cos(a)) + y0
-        return x2, y2
+        x = ((p[0] - midpoint[0]) * math.cos(a)) - ((p[1] - midpoint[1]) * math.sin(a)) + midpoint[0]
+        y = ((p[0] - midpoint[0]) * math.sin(a)) + ((p[1] - midpoint[1]) * math.cos(a)) + midpoint[1]
+        return x, y
 
     @staticmethod
     def midpoint(p1, p2):
@@ -117,39 +115,6 @@ class MathManager:
     def calcFocalLength(KNOWN_DISTANCE, areaofInterest_width_px=0.0, areaofInterest_width_cm=0.0):
         return (areaofInterest_width_px * KNOWN_DISTANCE) / areaofInterest_width_cm
 
-    def getRealWorldMap(self, img):
-        table_real_x_cm = 36.5
-
-        table_x = img.shape[1]
-        table_y = img.shape[0]
-        print("table_x: {}px".format(table_x))
-        print("table_y: {}px".format(table_y))
-
-        pixelsPerMetric = self.getPixelPerMetrix(img)
-
-        pice_height = 2.5 * pixelsPerMetric
-        print("pice_height: {}mm".format(pice_height / pixelsPerMetric))
-        print("pice_height: {}px".format(pice_height))
-
-        focallength =  self.getFocalLength()
-        camera_height = self.getCameraDistance(table_real_x_cm, focallength, table_x)
-        print("camera_height: {}cm".format(camera_height))
-        camera_height = camera_height * pixelsPerMetric
-
-        alpha = (math.atan(camera_height/(table_x / 2)))
-        beta = (math.atan(camera_height/(table_y / 2)))
-        print("alpha: {}°".format(math.degrees(alpha)))
-        print("beta: {}°".format(math.degrees(beta)))
-
-        pice_camera_distance = camera_height - pice_height
-
-        table_x_transformed = int(round(pice_camera_distance / math.tan(alpha), 0))*2
-        table_y_transformed = int(round(pice_camera_distance / math.tan(beta), 0))*2
-        print("table_x_transformed: {}px".format(table_x_transformed))
-        print("table_y_transformed: {}px".format(table_y_transformed))
-
-        return table_x_transformed, table_y_transformed
-
     def movePointByDistance(self, p, s, a, img):
         new_p = int(math.sqrt(math.pow((s + p[0]), 2))), int(math.sqrt(math.pow((s + p[1]), 2)))
         cv2.circle(img, new_p, 5,(0, 0, 0), -1)
@@ -159,43 +124,43 @@ class MathManager:
         (tl, tr, br, bl) = box
         return self.getAngleBetweenLines(br, bl, (0, br[1]))
 
-    def getPiceRotation(self, ctr, id, img):
-        box = self.getMinAreaBoxPoint(ctr)
-        boxrotation = self.getMinAreaBoxRotation(box)
-        dimA, dimB = self.getPiceDimension(ctr, img)
-        self.getPiceOrientation(box)
-        if id == 0: # Elefant
-            if self.getPiceOrientation(box):
-                return boxrotation + 12 +90
-            else:
-                return boxrotation + 12
-
-        if id == 1: # Frosch
-            return boxrotation
-        if id == 2: # Lowe
-            if self.getPiceOrientation(box):
-                return boxrotation + 5
-            else:
-                return boxrotation + 5 + 90
-        if id == 3: # Schmetterling
-            return boxrotation
-        if id == 4: # Sonne
-            return boxrotation - 90
-        if id == 5: # Vogel
-            return boxrotation - 42
-
-    def getPiceOrientation(self, box):
-        (tl, tr, br, bl) = box
-        x = self.getPointDistance(tl, bl)
-        y = self.getPointDistance(tr, bl)
-        if x > y:
-            return True
-        else:
-            return False
-
-
+    @staticmethod
+    def findIntersection(p1, p2, p3, p4):
+        px = ((p1[0]*p2[1]-p1[1]*p2[0])*(p3[0]-p4[0])-(p1[0]-p2[0])*(p3[0]*p4[1]-p3[1]*p4[0])) / \
+            ((p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]))
+        py = ((p1[0]*p2[1]-p1[1]*p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]*p4[1]-p3[1]*p4[0])) / \
+            ((p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]))
+        return px, py
 
     @staticmethod
     def getCameraDistance(knownWidth, focalLength, perWidth):
         # compute and return the distance from the maker to the camera
         return (knownWidth * focalLength) / perWidth
+
+    def rotateContur(self, ctr, angle, midpoint):
+        ctr_rotated = ctr
+        for i, c in enumerate(ctr):
+            print(c[0])
+            ctr_rotated[i] = self.rotatePoint(c[0], midpoint, angle)
+        return ctr_rotated
+
+
+    def getNormedContour(self, midpoint, normedctr):
+        normedmidpoint = self.getPiceMidpoint(normedctr)
+        ctr = normedctr
+        for i, c in enumerate(normedctr):
+            ctr[i] = [(midpoint[0] - normedmidpoint[0]) + c[0][0], (midpoint[1] - normedmidpoint[1]) + c[0][1]]
+        return ctr
+
+    def getRotation(self, ctr, midpoint, normctr):
+        normctr = self.getNormedContour(midpoint, normctr)
+
+        (tl, tr, br, bl) = self.getMinAreaBoxPoint(ctr)
+        (ntl, ntr, nbr, nbl) = self.getMinAreaBoxPoint(normctr)
+
+        distance = self.getPointDistance(tr, ntr)
+
+
+
+
+
