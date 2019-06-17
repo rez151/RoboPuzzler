@@ -1,6 +1,7 @@
 import cv2
 import math
 import numpy as np
+from sys import float_info
 from scipy.spatial import distance as dist
 from imutils import perspective
 
@@ -139,8 +140,8 @@ class MathManager:
 
     def rotateContur(self, ctr, angle, midpoint):
         ctr_rotated = ctr
+        ctr = ctr[::32]
         for i, c in enumerate(ctr):
-            print(c[0])
             ctr_rotated[i] = self.rotatePoint(c[0], midpoint, angle)
         return ctr_rotated
 
@@ -154,11 +155,24 @@ class MathManager:
 
     def getRotation(self, ctr, midpoint, normctr):
         normctr = self.getNormedContour(midpoint, normctr)
+        ctr = ctr
+        bestAngle = 360
+        bestDist = float_info.max
+        ran = 36
+        d = cv2.createShapeContextDistanceExtractor()
+        distanceExtractor = cv2.ShapeContextDistanceExtractor
+        for angle in range(0, ran):
+            print(0)
+            dist = distanceExtractor.computeDistance(d, ctr[::7], normctr[::7])
+            print(1)
+            normctr = self.rotateContur(normctr, 10, midpoint)
+            if dist < bestDist:
+                bestDist = dist
+                bestAngle = angle
+        return bestAngle
 
-        (tl, tr, br, bl) = self.getMinAreaBoxPoint(ctr)
-        (ntl, ntr, nbr, nbl) = self.getMinAreaBoxPoint(normctr)
 
-        distance = self.getPointDistance(tr, ntr)
+
 
 
 

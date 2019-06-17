@@ -12,7 +12,7 @@ class PiceManager:
         # img_thresh = cv2.resize(img_thresh ,(real_x, real_y))
         # img_input = cv2.resize(img_input ,(real_x, real_y))
         # gray = cv2.resize(gray, (real_x, real_y))
-        cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
+        cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]
         cv2.imshow("penis",img_thresh)
 
         image = img_input.copy()
@@ -30,11 +30,8 @@ class PiceManager:
                 midpointmm = MathManager().getPointToMM(img_input, midpoint)
                 classifierID, id = Classifire().Classifier(extractPiceClassification)
                 normedctr = self.getContour(CameraManager().getImageFilebyID(classifierID))
-                rotation = 0 # MathManager().getPiceRotation(ctr, id, image)
+                rotation = MathManager().getRotation(ctr, midpoint, normedctr)
                 dimension = MathManager().getPiceDimension(ctr, image)
-
-                a = MathManager.getNormedContour(midpoint, MathManager.getPiceMidpoint(normedctr), normedctr)
-                cv2.drawContours(image, [a], 0, (0, 0, 255), 1)
 
                 # correct Rotation
                 extractPiceClassification = imutils.rotate_bound(extractPiceClassification, rotation)
