@@ -1,15 +1,15 @@
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Conv2D, Activation, Dropout, GlobalAveragePooling2D
-from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint
 from keras import backend as K
 import matplotlib.pyplot as plt
 
 
 class TrainModel:
-    def trainModel(self):
+    @staticmethod
+    def trainModel():
         # required for efficient GPU use
         config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
         session = tf.Session(config=config)

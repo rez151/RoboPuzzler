@@ -71,7 +71,7 @@ class TrainModel:
                       optimizer='adam',
                       metrics=['accuracy'])
 
-        train_datagen = ImageDataGenerator(rescale=1. / 255, )
+        train_datagen = ImageDataGenerator(rescale=1. / 255)
 
         test_datagen = ImageDataGenerator(rescale=1. / 255)
 

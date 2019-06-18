@@ -29,12 +29,11 @@ class TrainingData:
         for path in trainPath:
             p = Augmentor.Pipeline(path)
             p.rotate(probability=0.75, max_left_rotation=2, max_right_rotation=2)
-            p.flip_random(probability=0.75)
             p.random_distortion(probability=1, grid_width=10, grid_height=10, magnitude=1)
             p.sample(samples, multi_threaded=True)
         pass
 
 
 if __name__ == '__main__':
-    TrainingData().generateTrainingData(1000)
+    TrainingData().generateTrainingData(1200)
 

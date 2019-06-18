@@ -23,6 +23,7 @@ class CameraManager:
         img_input = cap.read()[1]
         cap.release()
         img_input = cv2.resize(img_input, (1920, 1080))
+        cv2.imshow("te", img_input)
 
         return img_input
 
@@ -77,16 +78,20 @@ class CameraManager:
                     print("Done  \n")
                 else:
                     extractPice = PiceManager.PiceManager().getExtractPice(image, ctr)
-                    path = "Images/test/" + str(i) + ".jpg"
+                    path = "Images/validate/" + str(i) + ".jpg"
                     cv2.imwrite(path, cv2.resize(extractPice, (224, 224)))
-                    print("Saved " + str(i) + "picture to "+path)
+                    print("Saved " + str(i) + " picture to "+path)
             print("Saved all extract pictures")
         except Exception as e:
             print("Error: " + e)
 
 
 if __name__ == '__main__':
-    img = CameraManager().getCameraFrameInput(1)
-    cv2.imshow("img", img)
+    # img = CameraManager().getCameraFrameInput(1)
+    # cv2.imshow("img", img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    CameraManager().saveExtractImages()
     cv2.waitKey(0)
     cv2.destroyAllWindows()

@@ -100,10 +100,12 @@ class MathManager:
         dimB = dB / pixelsPerMetric
 
         # draw lines between the midpoints
-        cv2.line(img, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),(255, 0, 255), 1)
-        cv2.line(img, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),(255, 0, 255), 1)
-        cv2.putText(img, "a{:.2f}cm".format(dimA),(int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0, 0, 0), 1)
-        cv2.putText(img, "b{:.2f}cm".format(dimB),(int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0, 0, 0), 1)
+        cv2.line(img, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)), (255, 0, 255), 1)
+        cv2.line(img, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)), (255, 0, 255), 1)
+        cv2.putText(img, "a{:.2f}cm".format(dimA), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                    (0, 0, 0), 1)
+        cv2.putText(img, "b{:.2f}cm".format(dimB), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                    (0, 0, 0), 1)
 
         return dimA, dimB
 
@@ -118,7 +120,7 @@ class MathManager:
 
     def movePointByDistance(self, p, s, a, img):
         new_p = int(math.sqrt(math.pow((s + p[0]), 2))), int(math.sqrt(math.pow((s + p[1]), 2)))
-        cv2.circle(img, new_p, 5,(0, 0, 0), -1)
+        cv2.circle(img, new_p, 5, (0, 0, 0), -1)
         return self.rotatePoint(new_p, p, a)
 
     def getMinAreaBoxRotation(self, box):
@@ -127,10 +129,10 @@ class MathManager:
 
     @staticmethod
     def findIntersection(p1, p2, p3, p4):
-        px = ((p1[0]*p2[1]-p1[1]*p2[0])*(p3[0]-p4[0])-(p1[0]-p2[0])*(p3[0]*p4[1]-p3[1]*p4[0])) / \
-            ((p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]))
-        py = ((p1[0]*p2[1]-p1[1]*p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]*p4[1]-p3[1]*p4[0])) / \
-            ((p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]))
+        px = ((p1[0] * p2[1] - p1[1] * p2[0]) * (p3[0] - p4[0]) - (p1[0] - p2[0]) * (p3[0] * p4[1] - p3[1] * p4[0])) / \
+             ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]))
+        py = ((p1[0] * p2[1] - p1[1] * p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] * p4[1] - p3[1] * p4[0])) / \
+             ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]))
         return px, py
 
     @staticmethod
@@ -140,41 +142,73 @@ class MathManager:
 
     def rotateContur(self, ctr, angle, midpoint):
         ctr_rotated = ctr
-        ctr = ctr[::32]
         for i, c in enumerate(ctr):
             ctr_rotated[i] = self.rotatePoint(c[0], midpoint, angle)
         return ctr_rotated
 
-
-    def getNormedContour(self, midpoint, normedctr):
+    def getTransformedContour(self, midpoint, normedctr):
         normedmidpoint = self.getPiceMidpoint(normedctr)
         ctr = normedctr
         for i, c in enumerate(normedctr):
             ctr[i] = [(midpoint[0] - normedmidpoint[0]) + c[0][0], (midpoint[1] - normedmidpoint[1]) + c[0][1]]
         return ctr
 
+    def getPiceRotation(self, ctr, id, img):
+        box = self.getMinAreaBoxPoint(ctr)
+        boxrotation = self.getMinAreaBoxRotation(box)
+        dimA, dimB = self.getPiceDimension(ctr, img)
+        self.getPiceOrientation(box)
+        if id == 0:  # Elefant
+            if self.getPiceOrientation(box):
+                return boxrotation + 12 + 90
+            else:
+                return boxrotation + 12
+
+        if id == 1:  # Frosch
+            return boxrotation
+        if id == 2:  # Lowe
+            if self.getPiceOrientation(box):
+                return boxrotation + 5
+            else:
+                return boxrotation + 5 + 90
+        if id == 3:  # Schmetterling
+            return boxrotation
+        if id == 4:  # Sonne
+            return boxrotation - 90
+        if id == 5:  # Vogel
+            return boxrotation - 42
+
+
+    def getPiceOrientation(self, box):
+        (tl, tr, br, bl) = box
+        x = self.getPointDistance(tl, bl)
+        y = self.getPointDistance(tr, bl)
+        if x > y:
+            return True
+        else:
+            return False
+
     def getRotation(self, ctr, midpoint, normctr):
-        normctr = self.getNormedContour(midpoint, normctr)
+        normctr = self.getTransformedContour(midpoint, normctr)
         ctr = ctr
         bestAngle = 360
+        angle = 10
         bestDist = float_info.max
         ran = 36
         d = cv2.createShapeContextDistanceExtractor()
         distanceExtractor = cv2.ShapeContextDistanceExtractor
-        for angle in range(0, ran):
+        for i in range(0, ran):
             print(0)
-            dist = distanceExtractor.computeDistance(d, ctr[::7], normctr[::7])
+            dist = distanceExtractor.computeDistance(d, ctr, normctr)
             print(1)
-            normctr = self.rotateContur(normctr, 10, midpoint)
+            normctr = self.rotateContur(normctr, angle, midpoint)
+            print(2)
+            if (angle >= 360):
+                angle = 0.0
+            else:
+                angle += 10
+
             if dist < bestDist:
                 bestDist = dist
                 bestAngle = angle
         return bestAngle
-
-
-
-
-
-
-
-
