@@ -11,6 +11,11 @@ class MathManager:
         pixelsPerMetric = self.getPixelPerMetrix(img)
         return (point[0] / pixelsPerMetric) * 10, (point[1] / pixelsPerMetric) * 10
 
+    def getAngleFunc(a, b, h):
+        angleAlpha = math.atan(a/b)
+        s = h * math.tan(angleAlpha)
+        return s
+
     @staticmethod
     def getPiceMidpoint(ctr):
         M = cv2.moments(ctr)
