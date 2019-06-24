@@ -80,16 +80,17 @@ Weitere Pakete:
     $ sudo pip install imutils
 
 
-Mac OS
+Mac OS und Windows
 
 Quelle: https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class01_intro_python.ipynb
 
 Zur Installation unter Mac OS benutzen wir Miniconda (Anaconda) erhältlich unter https://docs.conda.io/en/latest/miniconda.html.
 Miniconda ist eine Freemium-Open-Source-Distribution für die Programmiersprachen Python und R.
+Unter Windows ist der Anaconda Prompt zu benutzen.
 
 Folgende Schritte haben wir nach der Installation von Miniconda durchgeführt (Terminalanweisungen):
 •	conda create --name tensorflow python=3.6
-•	source activate tensorflow
+•	source activate tensorflow (Windows: activate tensorflow), muss beim starten eines Terminals immer gemacht werden
 •	conda install scipy
 •	pip install --upgrade sklearn
 •	pip install --upgrade pandas
@@ -109,4 +110,3 @@ Folgende Schritte haben wir nach der Installation von Miniconda durchgeführt (T
 •	pip install --upgrade opencv-contrib-python
 
 
-Windowsanleitung tbd...
