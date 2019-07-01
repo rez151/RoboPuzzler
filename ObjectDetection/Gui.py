@@ -2,9 +2,10 @@ from tkinter import *
 import cv2
 from PIL import Image, ImageTk
 import ObjectDetection.MarkerTrackingManager as tm
+import ObjectDetection.PiceManager as pm
 import numpy as np
 
-cameraIndex=1
+cameraIndex=0
 
 width, height = 800, 600
 cap = cv2.VideoCapture(cameraIndex)
@@ -17,23 +18,7 @@ frame.pack()
 configframe = Frame(frame)
 configframe.pack(side=LEFT)
 
-lbl_thresh = Label(configframe, text="Threshold: ")
-lbl_thresh.grid(row=0, column=0)
 
-scalethresh = Scale(configframe, from_=0, to=255, orient=HORIZONTAL)
-scalethresh.grid(row=0, column=1)
-
-lbl_erode = Label(configframe, text="Erode: ")
-lbl_erode.grid(row=1, column=0)
-
-scaleerode = Scale(configframe, from_=0, to=15, orient=HORIZONTAL)
-scaleerode.grid(row=1, column=1)
-
-lbl_dilate = Label(configframe, text="Dilate: ")
-lbl_dilate.grid(row=2, column=0)
-
-scaledilate = Scale(configframe, from_=0, to=15, orient=HORIZONTAL)
-scaledilate.grid(row=2, column=1)
 
 modelpath = Entry(configframe)
 modelpath.grid(row=3, column=1)
@@ -59,52 +44,40 @@ def show_extractThrashFrame(frame):
         print(e)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (17, 17), 0)
-    thresh = cv2.threshold(gray, scalethresh.get(), 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    thresh = cv2.erode(thresh, None, iterations=scaleerode.get())
-    thresh = cv2.dilate(thresh, None, iterations=scaledilate.get())
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    kernel = np.ones((5, 5), np.uint8)
+    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
     return thresh
 
-def show_thresh(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (17, 17), 0)
-    thresh = cv2.threshold(gray, scalethresh.get(), 255, cv2.THRESH_BINARY)[1]
-    thresh = cv2.erode(thresh, None, iterations=scaleerode.get())
-    thresh = cv2.dilate(thresh, None, iterations=scaledilate.get())
-    return thresh
+def getFinalResult(cameraindex=1, imgid=0):
+    #extractedPices, img_input = pm.PiceManager().getAllPicesbyFrame(cameraindex)
+    path = "TestImages/{}.jpg".format(imgid)
+    extractedPices, img_input = pm.PiceManager().getAllPicesbyPath(path)
+    i = 0
+    for piceImg, midpoint, midpointcm, id, _, rotation, _ in extractedPices:
+        img = Image.fromarray(piceImg)
+        imgtk = ImageTk.PhotoImage(image=img)
+        w = Label(root, compound=CENTER, image=imgtk).pack(side="right")
 
-def show_resultImage(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (17, 17), 0)
-    thresh = cv2.threshold(gray,scalethresh.get(), 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    thresh = cv2.erode(thresh, None, iterations=scaleerode.get())
-    thresh = cv2.dilate(thresh, None, iterations=scaledilate.get())
+        id = id + 1
+        print("ID: {}".format(i) +
+              " X: {:.2f}mm".format(midpointcm[0]) +
+              " Y: {:.2f}mm".format(midpointcm[1]) +
+              " C: {}".format(id) +
+              " R: {:.2f}°".format(rotation))
 
-    _, cnts,  _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-    sorted_ctrs = sorted(cnts, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
-    for i, ctr in enumerate(sorted_ctrs):
-        if (i == 0):
-            pass
-        else:
-            cv2.drawContours(frame, [ctr], 0, (0, 0, 255), 2)
 
-    # pices , image = pm.PiceManager().getAllPicesbyFrame(thresh,frame)
-    return frame
 
 
 def show_frame():
     _, frame = cap.read()
     frame = cv2.flip(frame, 1)
 
-    # thresh = show_thresh(frame)
-    thresh = show_extractThrashFrame(frame)
-    # thresh = show_resultImage(frame)
+    getFinalResult(imgid=0)
 
-    img = Image.fromarray(thresh)
-    imgtk = ImageTk.PhotoImage(image=img)
-    lmain.imgtk = imgtk
-    lmain.configure(image=imgtk)
-    lmain.after(10, show_frame)
+
     print("##################")
 
 

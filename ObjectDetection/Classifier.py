@@ -12,7 +12,7 @@ class Classifire:
     def Classifier(self, img):
         image_width = 224
         image_hight = 224
-        modelpath = "model/model.h5"
+        modelpath = "model/model_32_32_64_dense_64.h5"
         image = self.resizeImageToInputSize(img, image_width, image_hight)
 
         # load model

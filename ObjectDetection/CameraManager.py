@@ -10,13 +10,13 @@ class CameraManager:
         thresh, gray = self.imageFilter(img_input)
         return thresh, img_input, gray
 
-    def getImageFilebyID(self, id):
+    def getImageByID(self, id):
         img_input = cv2.imread("Rotation/" + str(id) + ".jpg")
-        thresh = self.imageFilter(img_input)[0]
-        return thresh
+        thresh, gray = self.imageFilter(img_input)
+        return  thresh, gray
 
     @staticmethod
-    def getCameraFrameInput(cameraindex):
+    def getImageByCamera(cameraindex):
         cap = cv2.VideoCapture(cameraindex)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
@@ -24,7 +24,6 @@ class CameraManager:
         cap.release()
         img_input = cv2.resize(img_input, (1920, 1080))
         cv2.imshow("te", img_input)
-
         return img_input
 
     @staticmethod
@@ -36,17 +35,16 @@ class CameraManager:
         return img_undistorted
 
     def getAreaOfInterest(self, cameraindex):
-        img_input = self.getCameraFrameInput(cameraindex)
+        img_input = self.getImageByCamera(cameraindex)
         img_input = self.getUndistortImg(img_input)
         img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
-        path = "TestImages/" + str(4) + ".jpg"
-        cv2.imwrite(path, img_input)
+
+        cv2.imshow("te", img_input)
         return thresh, img_input, gray
 
     @staticmethod
     def arucoMarkerCut(img_input):
-
         try:
             corners, areasize, _ = MarkerTrackingManager.MarkerTrackingManager().getMarkerPoints(img_input)
             if len(corners) == 4:
@@ -65,8 +63,9 @@ class CameraManager:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (23, 23), 0)
         thresh = cv2.threshold(blur, 245, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        thresh = cv2.erode(thresh, None, iterations=0)
-        thresh = cv2.dilate(thresh, None, iterations=0)
+        kernel = np.ones((5, 5), np.uint8)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
         return thresh, gray
 
     def saveExtractImages(self):
@@ -78,8 +77,8 @@ class CameraManager:
                     print("Done  \n")
                 else:
                     extractPice = PiceManager.PiceManager().getExtractPice(image, ctr)
-                    path = "Images/validate/" + str(i) + ".jpg"
-                    cv2.imwrite(path, cv2.resize(extractPice, (224, 224)))
+                    path = "Rotation/" + str(i) + ".jpg"
+                    cv2.imwrite(path, extractPice)  # cv2.resize(extractPice, (224, 224)
                     print("Saved " + str(i) + " picture to "+path)
             print("Saved all extract pictures")
         except Exception as e:
@@ -87,7 +86,7 @@ class CameraManager:
 
 
 if __name__ == '__main__':
-    # img = CameraManager().getCameraFrameInput(1)
+    # img = CameraManager().getImageByCamera(1)
     # cv2.imshow("img", img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()

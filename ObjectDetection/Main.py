@@ -22,18 +22,21 @@ class Main:
         print("Output:")
         i = 0
         for piceImg, midpoint, midpointcm, id, _, rotation, _ in extractedPices:
+            id = id+1
             cv2.imshow(str(i), piceImg)
             print("ID: {}".format(i) +
                   " X: {:.2f}mm".format(midpointcm[0]) +
                   " Y: {:.2f}mm".format(midpointcm[1]) +
                   " C: {}".format(id) +
                   " R: {:.2f}°".format(rotation))
-            file.write(id + "," + str(midpointcm[0]) + "," + str(midpointcm[1]) + "," + str(round(rotation, 2)) + "\n")
+
+            file.write(str(id) + "," + str(midpointcm[0]) + "," + str(midpointcm[1]) + "," + str(round(rotation, 2)) + "\n")
             i += 1
+        file.write("end")
         file.close()
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    Main().startDetection(variant=0, imgid=0)
+    Main().startDetection(variant=1, imgid=1)
