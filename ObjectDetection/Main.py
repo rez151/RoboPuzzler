@@ -1,5 +1,6 @@
 import cv2
 import ObjectDetection.PiceManager as pm
+import ObjectDetection.Visualization as vs
 
 
 class Main:
@@ -23,7 +24,12 @@ class Main:
         i = 0
         for piceImg, midpoint, midpointcm, id, _, rotation, _ in extractedPices:
             id = id+1
-            cv2.imshow(str(i), piceImg)
+            #cv2.imshow(str(i), piceImg)
+            piceImg= cv2.resize(piceImg, (224, 224))
+            cv2.imwrite('log_img/Visualization/tmp.png',
+                        piceImg)
+            vs.Visualization().visualheat('log_img/Visualization/tmp.png', id)
+            #cv2.imshow(str(i), piceImg)
             print("ID: {}".format(i) +
                   " X: {:.2f}mm".format(midpointcm[0]) +
                   " Y: {:.2f}mm".format(midpointcm[1]) +
@@ -39,4 +45,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection(variant=1, imgid=1)
+    Main().startDetection(variant=1, imgid=2)
