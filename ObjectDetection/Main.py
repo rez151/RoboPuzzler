@@ -29,7 +29,6 @@ class Main:
             cv2.imwrite('log_img/Visualization/tmp.png',
                         piceImg)
             vs.Visualization().visualheat('log_img/Visualization/tmp.png', id)
-            #cv2.imshow(str(i), piceImg)
             print("ID: {}".format(i) +
                   " X: {:.2f}mm".format(midpointcm[0]) +
                   " Y: {:.2f}mm".format(midpointcm[1]) +
