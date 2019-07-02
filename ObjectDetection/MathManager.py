@@ -1,6 +1,7 @@
 import cv2
 import math
 import numpy as np
+from sys import float_info
 from scipy.spatial import distance as dist
 from imutils import perspective
 
@@ -10,8 +11,7 @@ class MathManager:
         pixelsPerMetric = self.getPixelPerMetrix(img)
         return (point[0] / pixelsPerMetric) * 10, (point[1] / pixelsPerMetric) * 10
 
-    @staticmethod
-    def getAngleFunc(a, b, h):
+    def getAngleFunc(a, b, h=2.5):
         angleAlpha = math.atan(a/b)
         s = h * math.tan(angleAlpha)
         return s
@@ -146,39 +146,36 @@ class MathManager:
         return (knownWidth * focalLength) / perWidth
 
     def rotateContur(self, ctr, angle, midpoint):
-        ctr_rotated = list()
-        for c in ctr:
-            # print("c: {}".format(c))
-            ctr_rotated.append(self.rotatePoint(c, midpoint, angle))
+        ctr_rotated = ctr
+        for i, c in enumerate(ctr):
+            ctr_rotated[i] = self.rotatePoint(c[0], midpoint, angle)
         return ctr_rotated
 
-    def getTransformedContour(self, midpoint, normedcorners, normdmidpoint):
-        ctr = normedcorners
-        for i, corner in enumerate(normedcorners):
-            ctr[i] = [(midpoint[0] - normdmidpoint[0]) + corner[0], (midpoint[1] - normdmidpoint[1]) + corner[1]]
+    def getTransformedContour(self, midpoint, normedctr):
+        normedmidpoint = self.getPiceMidpoint(normedctr)
+        ctr = normedctr
+        for i, c in enumerate(normedctr):
+            ctr[i] = [(midpoint[0] - normedmidpoint[0]) + c[0][0], (midpoint[1] - normedmidpoint[1]) + c[0][1]]
         return ctr
-
-    @staticmethod
-    def getRavelCorner(corners):
-        print(corners)
-
-        cornerlist = list()
-        for corner in corners:
-            x, y = corner.ravel()
-            cornerlist.append((x,y))
-        return cornerlist
 
     def getPiceRotation(self, ctr, id, img):
         box = self.getMinAreaBoxPoint(ctr)
         boxrotation = self.getMinAreaBoxRotation(box)
         dimA, dimB = self.getPiceDimension(ctr, img)
-
+        self.getPiceOrientation(box)
         if id == 0:  # Elefant
-            return boxrotation
+            if self.getPiceOrientation(box):
+                return boxrotation + 12 + 90
+            else:
+                return boxrotation + 12
+
         if id == 1:  # Frosch
             return boxrotation
         if id == 2:  # Lowe
-            return boxrotation + 5
+            if self.getPiceOrientation(box):
+                return boxrotation + 5
+            else:
+                return boxrotation + 5 + 90
         if id == 3:  # Schmetterling
             return boxrotation
         if id == 4:  # Sonne
@@ -186,74 +183,37 @@ class MathManager:
         if id == 5:  # Vogel
             return boxrotation - 42
 
-    def getRotation(self, corners, midpoint, normdcorners, normdmidpoint, image, extractedctr):
-        extractmidpoint = self.getPiceMidpoint(extractedctr)
-        normdcorners = self.getRavelCorner(normdcorners)
-        corners = self.getRavelCorner(corners)
 
-        normdcorners = self.getTransformedContour(midpoint, normdcorners, normdmidpoint)
-        corners = self.getTransformedContour(midpoint, corners, extractmidpoint)
+    def getPiceOrientation(self, box):
+        (tl, tr, br, bl) = box
+        x = self.getPointDistance(tl, bl)
+        y = self.getPointDistance(tr, bl)
+        if x > y:
+            return True
+        else:
+            return False
 
-        for co in normdcorners:
-            cv2.circle(image, (int(co[0]), int(co[1])), 3, 255, -1)
+    def getRotation(self, ctr, midpoint, normctr):
+        normctr = self.getTransformedContour(midpoint, normctr)
+        ctr = ctr
+        bestAngle = 360
+        angle = 10
+        bestDist = float_info.max
+        ran = 36
+        d = cv2.createShapeContextDistanceExtractor()
+        distanceExtractor = cv2.ShapeContextDistanceExtractor
+        for i in range(0, ran):
+            print(0)
+            dist = distanceExtractor.computeDistance(d, ctr, normctr)
+            print(1)
+            normctr = self.rotateContur(normctr, angle, midpoint)
+            print(2)
+            if (angle >= 360):
+                angle = 0.0
+            else:
+                angle += 10
 
-        for co in corners:
-            cv2.circle(image, (int(co[0]), int(co[1])), 3, 0, -1)
-
-
-        distance = 0
-        angle = 0
-        mindistance = float("inf")
-
-        for a in range(0, 360, 1):
-            for c in corners:
-                for nc in normdcorners:
-                    distance += self.getPointDistance(c, nc)
-            if distance < mindistance:
-                mindistance = distance
-                angle = a
-            distance = 0
-            corners = self.rotateContur(corners, a, midpoint)
-        print("angle: {}".format(angle))
-        return angle
-
-    def getRotation2(self, ctr, midpoint, normedctr, image):
-        normedctr = self.getTransformedContour(midpoint, normedctr, self.getPiceMidpoint(normedctr))
-        normextr = self.getExtremePoints(normedctr)
-        ctrextr = self.getExtremePoints(ctr)
-
-        for c in ctrextr:
-            cv2.circle(image, (int(c[0]), int(c[1])), 3, 0, -1)
-
-        for c in normextr:
-            cv2.circle(image, (int(c[0]), int(c[1])), 3, 255, -1)
-
-        distance = 0
-        angle = 0
-        mindistance = float("inf")
-
-        for a in range(0, 360, 1):
-            # print(a)
-            for c in ctrextr:
-                for nc in normextr:
-                    distance += self.getPointDistance(c, nc)
-            if distance < mindistance:
-                mindistance = distance
-                angle = a
-            distance = 0
-            ctrextr = self.rotateContur(ctrextr, a, midpoint)
-
-        #cv2.drawContours(image, [self.rotateContur(normedctr, angle, midpoint)], 0, (255, 0, 255), 1)
-        print("angle: {}".format(angle))
-        return angle
-
-
-
-
-    @staticmethod
-    def getExtremePoints(c):
-        extLeft = tuple(c[c[:, :, 0].argmin()][0])
-        extRight = tuple(c[c[:, :, 0].argmax()][0])
-        extTop = tuple(c[c[:, :, 1].argmin()][0])
-        extBot = tuple(c[c[:, :, 1].argmax()][0])
-        return (extLeft, extRight, extTop, extBot)
+            if dist < bestDist:
+                bestDist = dist
+                bestAngle = angle
+        return bestAngle

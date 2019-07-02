@@ -5,7 +5,7 @@ Die Anleitung zur Installation unter Linux (hier Ubuntu) führen wir hier nur th
 Abweichungen auftreten.
 Als Entwicklungsumgebung nutzen wir pyCharm von Jetbrains.
 Pakete
-Einige Pakete werden für dieses Projekt nicht unbedingt benötigt, jedoch haben wir alle installiert.
+Einige Pakete werden für dieses Pios rojekt nicht unbedingt benötigt, jedoch haben wir alle installiert.
 Außerdem kann es sein, dass einige Pakete bei anderen schon mit installiert werden oder hier nicht aufgeführte Pakete
 automatisch in der IDE installiert wurden.
 •	Scipy
