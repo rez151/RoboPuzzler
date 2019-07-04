@@ -128,9 +128,41 @@ class MathManager:
         cv2.circle(img, new_p, 5, (0, 0, 0), -1)
         return self.rotatePoint(new_p, p, a)
 
-    def getMinAreaBoxRotation(self, box):
+    def getMinAreaBoxRotation(self, box, id):
         (tl, tr, br, bl) = box
-        return self.getAngleBetweenLines(br, bl, (0, br[1]))
+        dist_bl_br = self.getPointDistance(bl, br)
+        dist_bl_tl = self.getPointDistance(bl, tl)
+
+        if dist_bl_br > dist_bl_tl:
+            if id == 0:  # Elefant
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 8
+            if id == 1:  # Frosch
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
+            if id == 2:  # Lowe
+                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 5
+            if id == 3:  # Schmetterling
+                return 0
+            if id == 4:  # Sonne
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
+            if id == 5:  # Vogel
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 45
+
+        else:
+            if id == 0:  # Elefant
+                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 8
+            if id == 1:  # Frosch
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
+            if id == 2:  # Lowe
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 7
+            if id == 3:  # Schmetterling
+                return 0
+            if id == 4:  # Sonne
+                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1]))
+            if id == 5:  # Vogel
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) - 45
+
+
+
 
     @staticmethod
     def findIntersection(p1, p2, p3, p4):
@@ -170,21 +202,12 @@ class MathManager:
 
     def getPiceRotation(self, ctr, id, img):
         box = self.getMinAreaBoxPoint(ctr)
-        boxrotation = self.getMinAreaBoxRotation(box)
-        dimA, dimB = self.getPiceDimension(ctr, img)
+        (tl, tr, br, bl) = box
+        cv2.circle(img, (br[0],br[1]), 10, (0, 0, 0), -1)
 
-        if id == 0:  # Elefant
-            return boxrotation + 11
-        if id == 1:  # Frosch
-            return boxrotation
-        if id == 2:  # Lowe
-            return boxrotation + 5
-        if id == 3:  # Schmetterling
-            return boxrotation
-        if id == 4:  # Sonne
-            return boxrotation - 90
-        if id == 5:  # Vogel
-            return boxrotation - 45
+        boxrotation = self.getMinAreaBoxRotation(box, id)
+        print(boxrotation)
+        return boxrotation
 
 
 

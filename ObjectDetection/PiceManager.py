@@ -22,13 +22,13 @@ class PiceManager:
                 extractPiceGray = self.getExtractPice(gray, ctr)
                 extractPiceThresh = self.getExtractPice(img_thresh, ctr)
                 extractedctr = self.getContour(extractPiceThresh)
-                corners = self.getCorners(extractPiceThresh)
+                # corners = self.getCorners(extractPiceThresh, image)
                 midpoint = MathManager.getPiceMidpoint(ctr)
                 midpointmm = MathManager().getPointToMM(img_input, midpoint)
                 classifierID, id = Classifire().Classifier(extractPiceGray)
                 normpicethresh, normpicegray = CameraManager().getImageByID(classifierID)
                 normedctr = self.getContour(normpicethresh)
-                normedcorners = self.getCorners(normpicethresh)
+                # normedcorners = self.getCorners(normpicethresh)
                 normedmidpoint = MathManager.getPiceMidpoint(normedctr)
 
                 heatmap = 0
@@ -61,8 +61,12 @@ class PiceManager:
                 return ctr
 
     @staticmethod
-    def getCorners(gray):
-        return cv2.cornerHarris(gray,2,3,0.04)
+    def getCorners(gray,img):
+        dst = cv2.cornerHarris(gray,2,3,0.04)
+        dst = cv2.dilate(dst, None)
+
+        print(dst)
+        return dst
 
     @staticmethod
     def drawInformations(image, extractedPices):
