@@ -42,8 +42,7 @@ class Visualization:
             plt.show(bbox_inches='tight', pad_inches=0)
 
     def visualheat(self, img, id):
-        global superimposed_img
-        model = load_model('model/model_32_32_64_dense_64.h5')
+        model = load_model('model/BatchNormalization/model_32_32_64_dense_64.h5')
         # model.summary()
         image = self.preprocessing(img)
         preds = model.predict(image)
@@ -51,7 +50,7 @@ class Visualization:
         layer_sizes = [32, 32, 64]
         j = 0
         for name in layer_names:
-            orig_img = image
+            orig_img = cv2.imread(img)
             superimposed_img = orig_img
             output = model.output[:, np.argmax(preds[0])]
             last_conv_layer = model.get_layer(name)
@@ -79,15 +78,17 @@ class Visualization:
                 # superimposed_img = heatmap * 0.4 + image
                 superimposed_img = heatmap * 0.4 + orig_img
                 cv2.imwrite('log_img/Visualization/tmp.png', superimposed_img)
-        cv2.imwrite('log_img/Visualization/{}.jpg'.format(id), superimposed_img)
-
+        cv2.imwrite('log_img/Visualization/{}.jpg'.format(
+            id),
+            superimposed_img)
+    #back to the roots
     @staticmethod
-    def preprocessing(img):
-        image = cv2.resize(img, (224, 224))
-        image = image.astype("float") / 255.0
-        image = img_to_array(image)
-        image = np.expand_dims(image, axis=0)
-        return image
+    def preprocessing(img_path):
+        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        img = img_to_array(img)
+        img = np.expand_dims(img, axis=0)
+        img /= 255.
+        return img
 
 
 if __name__ == '__main__':
