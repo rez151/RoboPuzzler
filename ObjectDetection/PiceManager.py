@@ -43,6 +43,7 @@ class PiceManager:
                 # print progress status
                 print("{}%".format(str(int((i * 100) / (len(cnts) - 1)))))
         image = self.drawInformations(image, extractedPices)
+        cv2.imwrite("TestImages/tmp.jpg", image)
         return extractedPices, image
 
     @staticmethod
