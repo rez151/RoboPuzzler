@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, BatchNormalization
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras import backend as K
@@ -27,14 +27,14 @@ class TrainModel:
         image_width = 224
         image_hight = 224
         # batch_size, defines the number of samples that will be propagated through the network
-        batch_size = 10
+        batch_size = 32
         # Sequential, prepare the model to a list of layers
         model = Sequential()
         # Definition for the layout of the network
         dense_layers = [1]
-        layer_sizes = [32, 32, 64, 128]
-        conv_layers = [4]
-        # Coonv2D(number of filters(window_height, window_width), Activationfunction, input_shape)
+        layer_sizes = [32, 32, 64]
+        conv_layers = [3]
+        # Coonv2D, convolutional operation
         # MaxPooling2D(pool_size=(2, 2))
         # loop for network layer
         for dense_layer in dense_layers:
@@ -43,29 +43,30 @@ class TrainModel:
                 model.add(Conv2D(
                     layer_sizes[0],
                     (3, 3),
+                    activation='relu',
                     input_shape=(
                         image_width,
                         image_hight,
                         colerType
                     )
                 ))
-                model.add(Activation('relu'))
+                model.add(BatchNormalization())
                 model.add(MaxPooling2D(pool_size=(2, 2)))
 
                 for l in range(conv_layer - 1):
-                    model.add(Conv2D(layer_sizes[i + 1], (3, 3)))
-                    model.add(Activation('relu'))
+                    model.add(Conv2D(layer_sizes[i + 1], (3, 3), activation='relu'))
+                    model.add(BatchNormalization())
                     model.add(MaxPooling2D(pool_size=(2, 2)))
                     i += 1
 
                 model.add(Flatten())
                 for _ in range(dense_layer):
-                    model.add(Dense(128))
-                    model.add(Activation('relu'))
+                    model.add(Dense(64, activation='relu'))
+                    model.add(BatchNormalization())
 
                 model.add(Dropout(0.5))
-                model.add(Dense(6))
-                model.add(Activation('softmax'))
+                model.add(Dense(6, activation='softmax'))
+                model.add(BatchNormalization())
 
         model.compile(loss='categorical_crossentropy',
                       optimizer='adam',
@@ -92,7 +93,7 @@ class TrainModel:
         callback_list = [
             EarlyStopping(
                 monitor='acc',
-                patience=2,
+                patience=1
             ),
             ModelCheckpoint(
                 filepath='model/first_try.h5',
@@ -102,7 +103,7 @@ class TrainModel:
             ReduceLROnPlateau(
                 monitor='val_loss',
                 factor=0.1,
-                patience=3
+                patience=10
             )
         ]
 
@@ -110,10 +111,10 @@ class TrainModel:
             history = model.fit_generator(
                 train_generator,
                 callbacks=callback_list,
-                epochs=20,
-                steps_per_epoch=6000 / batch_size,
+                epochs=30,
+                steps_per_epoch=6138 / batch_size,
                 validation_data=validation_generator,
-                validation_steps=2466 / batch_size,
+                validation_steps=1236 / batch_size,
                 verbose=1
             )
 
@@ -129,12 +130,11 @@ class TrainModel:
             plt.title('Korrektklassifizierungsrate Training/Validierung')
             plt.legend()
             plt.savefig(
-                'log_img/Klassifizierung_ConvLayers_{}_layersizes_{}_{}_{}_{}.png'.format(
+                'log_img/Klassifizierung_ConvLayers_{}_layersizes_{}_{}_{}.png'.format(
                     conv_layers[0],
                     layer_sizes[0],
                     layer_sizes[1],
-                    layer_sizes[2],
-                    layer_sizes[3]
+                    layer_sizes[2]
                 )
             )
             plt.figure()
@@ -143,12 +143,11 @@ class TrainModel:
             plt.title('Wert der Verlustfunktion Training/Validierung')
             plt.legend()
             plt.savefig(
-                'log_img//Verlustfunktion_ConvLayers_{}_layersizes_{}_{}_{}_{}.png'.format(
+                'log_img/Verlustfunktion_ConvLayers_{}_layersizes_{}_{}_{}.png'.format(
                     conv_layers[0],
                     layer_sizes[0],
                     layer_sizes[1],
-                    layer_sizes[2],
-                    layer_sizes[3]
+                    layer_sizes[2]
                 )
             )
             plt.show()
