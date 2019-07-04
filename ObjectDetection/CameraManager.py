@@ -21,7 +21,8 @@ class CameraManager:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         img_input = cap.read()[1]
-        cap.release()
+        if(cap.isOpened()):
+            cap.release()
         return img_input
 
     @staticmethod
