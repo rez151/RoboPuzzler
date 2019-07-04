@@ -84,6 +84,9 @@ class CameraManager:
         except Exception as e:
             print("Error: " + e)
 
+    def __del__(self):
+        print('Destructor called, Employee deleted.')
+
 
 if __name__ == '__main__':
     # img = CameraManager().getImageByCamera(1)

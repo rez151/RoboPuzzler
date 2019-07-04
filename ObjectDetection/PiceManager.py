@@ -9,7 +9,6 @@ class PiceManager:
     def extractPices(self, img_thresh, img_input, gray):
         extractedPices = []
         cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]
-        cv2.imshow("Thresh", img_thresh)
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
             if cv2.contourArea(ctr) < 100:
@@ -22,19 +21,11 @@ class PiceManager:
                 # get Extracted pice
                 extractPiceGray = self.getExtractPice(gray, ctr)
                 extractPiceThresh = self.getExtractPice(img_thresh, ctr)
-                extractedctr = self.getContour(extractPiceThresh)
-                corners = self.getCorners(extractPiceThresh)
                 midpoint = MathManager.getPiceMidpoint(ctr)
                 midpointmm = MathManager().getPointToMM(img_input, midpoint)
                 classifierID, id = Classifire().Classifier(extractPiceGray)
-                normpicethresh, normpicegray = CameraManager().getImageByID(classifierID)
-                normedctr = self.getContour(normpicethresh)
-                normedcorners = self.getCorners(normpicethresh)
-                normedmidpoint = MathManager.getPiceMidpoint(normedctr)
-
-                rotation = 0 # TODO Rotation Detection
-                # dimension = MathManager().getPiceDimension(ctr, image)
-                # normedctr = MathManager().getTransformedContour(midpoint, normedctr)
+                rotation = MathManager().getPiceRotation(ctr, id, image)
+                dimension = MathManager().getPiceDimension(ctr, image)
 
                 # correct Rotation
                 extractPiceGray = imutils.rotate_bound(extractPiceGray, rotation)
@@ -42,6 +33,7 @@ class PiceManager:
                 # print progress status
                 print("{}%".format(str(int((i * 100) / (len(cnts) - 1)))))
         image = self.drawInformations(image, extractedPices)
+        cv2.imwrite("TestImages/tmp.jpg", image)
         return extractedPices, image
 
     @staticmethod
@@ -60,8 +52,12 @@ class PiceManager:
                 return ctr
 
     @staticmethod
-    def getCorners(gray):
-        return cv2.Canny(gray, 50, 150, apertureSize=3)
+    def getCorners(gray,img):
+        dst = cv2.cornerHarris(gray,2,3,0.04)
+        dst = cv2.dilate(dst, None)
+
+        print(dst)
+        return dst
 
     @staticmethod
     def drawInformations(image, extractedPices):
@@ -85,3 +81,5 @@ class PiceManager:
         img_thresh, img_input, gray = CameraManager().getAreaOfInterest(cameraindex=cameraIndex)
         return self.extractPices(img_thresh, img_input, gray)
 
+    def __del__(self):
+        print('Destructor called, Employee deleted.')
