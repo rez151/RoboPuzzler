@@ -26,7 +26,7 @@ class TrainingData:
                      "Images/validate/Vogel"}
 
 
-        for path in trainPath:
+        for path in validationPath:
             p = Augmentor.Pipeline(path)
             p.rotate(probability=0.75, max_left_rotation=2, max_right_rotation=2)
             p.random_distortion(probability=1, grid_width=10, grid_height=10, magnitude=1)
@@ -35,5 +35,5 @@ class TrainingData:
 
 
 if __name__ == '__main__':
-    TrainingData().generateTrainingData(1200)
+    TrainingData().generateTrainingData(200)
 

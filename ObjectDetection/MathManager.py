@@ -128,41 +128,9 @@ class MathManager:
         cv2.circle(img, new_p, 5, (0, 0, 0), -1)
         return self.rotatePoint(new_p, p, a)
 
-    def getMinAreaBoxRotation(self, box, id):
+    def getMinAreaBoxRotation(self, box):
         (tl, tr, br, bl) = box
-        dist_bl_br = self.getPointDistance(bl, br)
-        dist_bl_tl = self.getPointDistance(bl, tl)
-
-        if dist_bl_br > dist_bl_tl:
-            if id == 0:  # Elefant
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 8
-            if id == 1:  # Frosch
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
-            if id == 2:  # Lowe
-                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 5
-            if id == 3:  # Schmetterling
-                return 0
-            if id == 4:  # Sonne
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
-            if id == 5:  # Vogel
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 45
-
-        else:
-            if id == 0:  # Elefant
-                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 8
-            if id == 1:  # Frosch
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
-            if id == 2:  # Lowe
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 7
-            if id == 3:  # Schmetterling
-                return 0
-            if id == 4:  # Sonne
-                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1]))
-            if id == 5:  # Vogel
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) - 45
-
-
-
+        return self.getAngleBetweenLines(br, bl, (0, br[1]))
 
     @staticmethod
     def findIntersection(p1, p2, p3, p4):
@@ -202,12 +170,83 @@ class MathManager:
 
     def getPiceRotation(self, ctr, id, img):
         box = self.getMinAreaBoxPoint(ctr)
-        (tl, tr, br, bl) = box
-        cv2.circle(img, (br[0],br[1]), 10, (0, 0, 0), -1)
+        boxrotation = self.getMinAreaBoxRotation(box)
+        dimA, dimB = self.getPiceDimension(ctr, img)
 
-        boxrotation = self.getMinAreaBoxRotation(box, id)
-        print(boxrotation)
-        return boxrotation
+        if id == 0:  # Elefant
+            return boxrotation
+        if id == 1:  # Frosch
+            return boxrotation
+        if id == 2:  # Lowe
+            return boxrotation + 5
+        if id == 3:  # Schmetterling
+            return boxrotation
+        if id == 4:  # Sonne
+            return boxrotation - 90
+        if id == 5:  # Vogel
+            return boxrotation - 42
+
+    def getRotation(self, corners, midpoint, normdcorners, normdmidpoint, image, extractedctr):
+        extractmidpoint = self.getPiceMidpoint(extractedctr)
+        normdcorners = self.getRavelCorner(normdcorners)
+        corners = self.getRavelCorner(corners)
+
+        normdcorners = self.getTransformedContour(midpoint, normdcorners, normdmidpoint)
+        corners = self.getTransformedContour(midpoint, corners, extractmidpoint)
+
+        for co in normdcorners:
+            cv2.circle(image, (int(co[0]), int(co[1])), 3, 255, -1)
+
+        for co in corners:
+            cv2.circle(image, (int(co[0]), int(co[1])), 3, 0, -1)
+
+
+        distance = 0
+        angle = 0
+        mindistance = float("inf")
+
+        for a in range(0, 360, 1):
+            for c in corners:
+                for nc in normdcorners:
+                    distance += self.getPointDistance(c, nc)
+            if distance < mindistance:
+                mindistance = distance
+                angle = a
+            distance = 0
+            corners = self.rotateContur(corners, a, midpoint)
+        print("angle: {}".format(angle))
+        return angle
+
+    def getRotation2(self, ctr, midpoint, normedctr, image):
+        normedctr = self.getTransformedContour(midpoint, normedctr, self.getPiceMidpoint(normedctr))
+        normextr = self.getExtremePoints(normedctr)
+        ctrextr = self.getExtremePoints(ctr)
+
+        for c in ctrextr:
+            cv2.circle(image, (int(c[0]), int(c[1])), 3, 0, -1)
+
+        for c in normextr:
+            cv2.circle(image, (int(c[0]), int(c[1])), 3, 255, -1)
+
+        distance = 0
+        angle = 0
+        mindistance = float("inf")
+
+        for a in range(0, 360, 1):
+            # print(a)
+            for c in ctrextr:
+                for nc in normextr:
+                    distance += self.getPointDistance(c, nc)
+            if distance < mindistance:
+                mindistance = distance
+                angle = a
+            distance = 0
+            ctrextr = self.rotateContur(ctrextr, a, midpoint)
+
+        #cv2.drawContours(image, [self.rotateContur(normedctr, angle, midpoint)], 0, (255, 0, 255), 1)
+        print("angle: {}".format(angle))
+        return angle
+
 
 
 

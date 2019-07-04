@@ -21,8 +21,9 @@ class CameraManager:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         img_input = cap.read()[1]
-        if(cap.isOpened()):
-            cap.release()
+        cap.release()
+        img_input = cv2.resize(img_input, (1920, 1080))
+        cv2.imshow("te", img_input)
         return img_input
 
     @staticmethod
@@ -38,6 +39,8 @@ class CameraManager:
         img_input = self.getUndistortImg(img_input)
         img_input = self.arucoMarkerCut(img_input)
         thresh, gray = self.imageFilter(img_input)
+
+        cv2.imshow("te", img_input)
         return thresh, img_input, gray
 
     @staticmethod
@@ -87,8 +90,7 @@ if __name__ == '__main__':
     # cv2.imshow("img", img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    img = CameraManager().getImageByCamera(1)
-    cv2.imshow("img", img)
 
+    CameraManager().saveExtractImages()
     cv2.waitKey(0)
     cv2.destroyAllWindows()
