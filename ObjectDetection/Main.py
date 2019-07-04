@@ -20,7 +20,8 @@ class Main:
     def preentation(extractedPices, img_input):
         cv2.imshow("Input", img_input)
         cv2.imwrite("Images/3.jpg", img_input)
-        file = open("output/coordinates.csv", "w")
+
+        file = open("/Volumes/shared/cordinaten.csv", "w")
         print("Output:")
         i = 0
         for piceImg, midpoint, midpointcm, id, _, rotation, _, _ in extractedPices:
@@ -35,6 +36,9 @@ class Main:
             i += 1
         file.write("end")
         file.close()
+        status = open("/Volumes/shared/status.txt", "w")
+        status.close()
+
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
