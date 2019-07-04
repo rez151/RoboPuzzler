@@ -18,20 +18,17 @@ class Main:
 
     @staticmethod
     def preentation(extractedPices, img_input):
-        cv2.imshow("Input", img_input)
-        cv2.imwrite("Images/3.jpg", img_input)
-
         file = open("/Volumes/shared/cordinaten.csv", "w")
         print("Output:")
         i = 0
-        for piceImg, midpoint, midpointcm, id, _, rotation, _, _ in extractedPices:
+        for piceImg, midpoint, midpointcm, id, _, rotation, _ in extractedPices:
             id = id+1
             print("ID: {}".format(i) +
                   " X: {:.2f}mm".format(midpointcm[0]) +
                   " Y: {:.2f}mm".format(midpointcm[1]) +
                   " C: {}".format(id) +
                   " R: {:.2f}°".format(rotation))
-            cv2.imshow(str(i), piceImg)
+            #cv2.imshow(str(i), piceImg)
             file.write(str(id) + "," + str(midpointcm[0]) + "," + str(midpointcm[1]) + "," + str(round(rotation, 2)) + "\n")
             i += 1
         file.write("end")
@@ -39,8 +36,8 @@ class Main:
         status = open("/Volumes/shared/status.txt", "w")
         status.close()
 
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

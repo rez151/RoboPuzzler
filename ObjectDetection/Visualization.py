@@ -41,11 +41,11 @@ class Visualization:
             )
             plt.show(bbox_inches='tight', pad_inches=0)
 
-    def visualheat(self, img, id):
+    def visualheat(self, imgpfad, id):
         global superimposed_img
         model = load_model('model/model_32_32_64_dense_64.h5')
         # model.summary()
-        image = self.preprocessing(img)
+        image = self.preprocessing(imgpfad)
         preds = model.predict(image)
         layer_names = ['conv2d_1', 'conv2d_2', 'conv2d_3']
         layer_sizes = [32, 32, 64]
@@ -82,8 +82,9 @@ class Visualization:
         cv2.imwrite('log_img/Visualization/{}.jpg'.format(id), superimposed_img)
 
     @staticmethod
-    def preprocessing(img):
-        image = cv2.resize(img, (224, 224))
+    def preprocessing(imgpfad):
+        image = cv2.imread(imgpfad)
+        image = cv2.resize(image, (224, 224))
         image = image.astype("float") / 255.0
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)

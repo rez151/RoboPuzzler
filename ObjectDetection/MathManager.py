@@ -135,7 +135,7 @@ class MathManager:
 
         if dist_bl_br > dist_bl_tl:
             if id == 0:  # Elefant
-                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 8
+                return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) + 11
             if id == 1:  # Frosch
                 return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
             if id == 2:  # Lowe
@@ -149,7 +149,7 @@ class MathManager:
 
         else:
             if id == 0:  # Elefant
-                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 8
+                return self.getAngleBetweenLines(bl, tl, (br[0], bl[1])) + 11
             if id == 1:  # Frosch
                 return self.getAngleBetweenLines(bl, br, (br[0], bl[1]))
             if id == 2:  # Lowe
@@ -160,9 +160,6 @@ class MathManager:
                 return self.getAngleBetweenLines(bl, tl, (br[0], bl[1]))
             if id == 5:  # Vogel
                 return self.getAngleBetweenLines(bl, br, (br[0], bl[1])) - 45
-
-
-
 
     @staticmethod
     def findIntersection(p1, p2, p3, p4):
@@ -180,7 +177,6 @@ class MathManager:
     def rotateContur(self, ctr, angle, midpoint):
         ctr_rotated = list()
         for c in ctr:
-            # print("c: {}".format(c))
             ctr_rotated.append(self.rotatePoint(c, midpoint, angle))
         return ctr_rotated
 
@@ -203,13 +199,10 @@ class MathManager:
     def getPiceRotation(self, ctr, id, img):
         box = self.getMinAreaBoxPoint(ctr)
         (tl, tr, br, bl) = box
-        cv2.circle(img, (br[0],br[1]), 10, (0, 0, 0), -1)
 
         boxrotation = self.getMinAreaBoxRotation(box, id)
         print(boxrotation)
         return boxrotation
-
-
 
     @staticmethod
     def getExtremePoints(c):
