@@ -19,22 +19,18 @@ class Main:
     @staticmethod
     def preentation(extractedPices, img_input):
         cv2.imshow("Input", img_input)
-        file = open("output/cordinaten.txt", "w")
+        cv2.imwrite("Images/3.jpg", img_input)
+        file = open("output/coordinates.csv", "w")
         print("Output:")
         i = 0
-        for piceImg, midpoint, midpointcm, id, _, rotation, _ in extractedPices:
+        for piceImg, midpoint, midpointcm, id, _, rotation, _, _ in extractedPices:
             id = id+1
-            #cv2.imshow(str(i), piceImg)
-            piceImg= cv2.resize(piceImg, (224, 224))
-            cv2.imwrite('log_img/Visualization/tmp.png',
-                        piceImg)
-            vs.Visualization().visualheat('log_img/Visualization/tmp.png', id)
             print("ID: {}".format(i) +
                   " X: {:.2f}mm".format(midpointcm[0]) +
                   " Y: {:.2f}mm".format(midpointcm[1]) +
                   " C: {}".format(id) +
                   " R: {:.2f}°".format(rotation))
-
+            cv2.imshow(str(i), piceImg)
             file.write(str(id) + "," + str(midpointcm[0]) + "," + str(midpointcm[1]) + "," + str(round(rotation, 2)) + "\n")
             i += 1
         file.write("end")
@@ -44,4 +40,4 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main().startDetection(variant=1, imgid=2)
+    Main().startDetection(variant=0, imgid=2)

@@ -9,7 +9,6 @@ class PiceManager:
     def extractPices(self, img_thresh, img_input, gray):
         extractedPices = []
         cnts = cv2.findContours(img_thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]
-        cv2.imshow("Thresh", img_thresh)
         image = img_input.copy()
         for i, ctr in enumerate(cnts):
             if cv2.contourArea(ctr) < 100:
@@ -32,13 +31,15 @@ class PiceManager:
                 normedcorners = self.getCorners(normpicethresh)
                 normedmidpoint = MathManager.getPiceMidpoint(normedctr)
 
-                rotation = 0 # TODO Rotation Detection
-                # dimension = MathManager().getPiceDimension(ctr, image)
+                heatmap = 0
+
+                rotation = MathManager().getPiceRotation(ctr, id, image)
+                dimension = MathManager().getPiceDimension(ctr, image)
                 # normedctr = MathManager().getTransformedContour(midpoint, normedctr)
 
                 # correct Rotation
                 extractPiceGray = imutils.rotate_bound(extractPiceGray, rotation)
-                extractedPices.insert(i, [extractPiceGray, midpoint, midpointmm, id, classifierID, rotation, ctr])
+                extractedPices.insert(i, [extractPiceGray, midpoint, midpointmm, id, classifierID, rotation, ctr, heatmap])
                 # print progress status
                 print("{}%".format(str(int((i * 100) / (len(cnts) - 1)))))
         image = self.drawInformations(image, extractedPices)
@@ -61,12 +62,12 @@ class PiceManager:
 
     @staticmethod
     def getCorners(gray):
-        return cv2.Canny(gray, 50, 150, apertureSize=3)
+        return cv2.cornerHarris(gray,2,3,0.04)
 
     @staticmethod
     def drawInformations(image, extractedPices):
         for pices in extractedPices:
-            _, midpoint, _, _, classifierID, _, ctr = pices
+            _, midpoint, _, _, classifierID, _, ctr, _ = pices
             # draw Contours
             cv2.drawContours(image, [ctr], 0, (0, 0, 255), 1)
             # draw Midpoint
